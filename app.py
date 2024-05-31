@@ -1,28 +1,26 @@
 from fastapi import *
 from fastapi.responses import FileResponse
 from fastapi.responses import JSONResponse
-import mysql.connector
-import socket
-import ssl
-
-hostname = 'www.python.org'
-context = ssl.create_default_context()
-
-with socket.create_connection((hostname, 443)) as sock:
-    with context.wrap_socket(sock, server_hostname=hostname) as ssock:
-        print(ssock.version())
+import mysql.connector.pooling
 app=FastAPI()
 
 # 連線資料庫
-connection=mysql.connector.connect(
-    user="root",
-    password="root",
-    host="localhost",
-    database="taipei_day_trip"
+con = {
+    "user": "debian-sys-maint",
+    "password": "YNGJmkTnnhw4dDT2",
+    "host": "localhost",
+    "database": "taipei_day_trip"
+}
+connection_pool = mysql.connector.pooling.MySQLConnectionPool(
+    pool_name="my_pool",
+    pool_size=5,
+    **con
 )
 
 def execute_query(sql, values=None):
+    connection = None
     try:
+        connection = connection_pool.get_connection()
         if connection.is_connected():
             cursor = connection.cursor()
             if values:
@@ -34,9 +32,8 @@ def execute_query(sql, values=None):
     except mysql.connector.Error as e:
         print(f"Error: {e.msg}")
     finally:
-        if 'cursor' in locals():
+        if connection:
             cursor.close()
-        if 'connection' in locals():
             connection.close()
 
 def process_to_JSON(result):
