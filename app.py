@@ -2,6 +2,7 @@ from fastapi import *
 from fastapi.responses import FileResponse
 app=fastapi()
 
+
 # Static Pages (Never Modify Code in this Block)
 @app.get("/", include_in_schema=False)
 async def index(request: Request):
