@@ -1,26 +1,19 @@
 from fastapi import *
 from fastapi.responses import FileResponse
 from fastapi.responses import JSONResponse
-import mysql.connector.pooling
+import mysql.connector
 app=FastAPI()
 
 # 連線資料庫
-con = {
-    "user": "root",
-    "password": "root",
-    "host": "localhost",
-    "database": "taipei_day_trip"
-}
-connection_pool = mysql.connector.pooling.MySQLConnectionPool(
-    pool_name="my_pool",
-    pool_size=5,
-    **con
+connection=mysql.connector.connect(
+    user="root",
+    password="root",
+    host="localhost",
+    database="taipei_day_trip"
 )
 
 def execute_query(sql, values=None):
-    connection = None
     try:
-        connection = connection_pool.get_connection()
         if connection.is_connected():
             cursor = connection.cursor()
             if values:
@@ -32,8 +25,9 @@ def execute_query(sql, values=None):
     except mysql.connector.Error as e:
         print(f"Error: {e.msg}")
     finally:
-        if connection:
+        if 'cursor' in locals():
             cursor.close()
+        if 'connection' in locals():
             connection.close()
 
 def process_to_JSON(result):
