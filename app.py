@@ -4,6 +4,7 @@ from fastapi.responses import JSONResponse
 import mysql.connector.pooling
 app=FastAPI()
 
+
 # 連線資料庫
 con = {
     "user": "debian-sys-maint",
