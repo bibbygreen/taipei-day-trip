@@ -5,6 +5,7 @@ import mysql.connector.pooling
 import json
 app=FastAPI()
 
+
 con = {
     "user": "debian-sys-maint",
     "password": "YNGJmkTnnhw4dDT2",
