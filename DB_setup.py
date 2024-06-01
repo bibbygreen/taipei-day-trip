@@ -1,10 +1,9 @@
 import json
 import mysql.connector.pooling
 
-# 連線資料庫
 con = {
-    "user": "root",
-    "password": "root",
+    "user": "debian-sys-maint",
+    "password": "YNGJmkTnnhw4dDT2",
     "host": "localhost",
     "database": "taipei_day_trip"
 }
@@ -44,7 +43,6 @@ with open(url, 'r', encoding='utf-8') as file:
 
 images=[]
 for i in range(len(data['result']['results'])):
-    raw_id=int(data['result']['results'][i]['_id'])
     name=data['result']['results'][i]['name']
     category=data['result']['results'][i]['CAT']
     description=data['result']['results'][i]['description']
@@ -56,10 +54,10 @@ for i in range(len(data['result']['results'])):
     lng=float(data['result']['results'][i]['longitude'])
 
     url_string=data['result']['results'][i]['file']
-    images=[part + ".jpg" for part in url_string.split(".jpg")[:-1]]
-    images+=[part + ".png" for part in url_string.split(".png")[:-1]]
-    images+=[part + ".jpg" for part in url_string.split(".JPG")[:-1]]
-    images+=[part + ".png" for part in url_string.split(".PNG")[:-1]]
+    extensions = ['.jpg', '.JPG', '.png', '.PNG']
+    for ext in extensions:
+    # Split the URL string by the current extension and iterate over the parts
+        for part in url_string.split(ext)[:-1]:
+            images.append(part + ext)
     images_json = json.dumps(images)
-    break
-    execute_query("INSERT INTO taipei_spots (raw_id, name, category, description, address, transport, mrt, lat, lng, images) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", (raw_id, name, category, description, address, transport, mrt, lat, lng, images_json))
+    execute_query("INSERT INTO taipei_spots (name, category, description, address, transport, mrt, lat, lng, images) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)", (name, category, description, address, transport, mrt, lat, lng, images_json))

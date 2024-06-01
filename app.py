@@ -2,9 +2,9 @@ from fastapi import *
 from fastapi.responses import FileResponse
 from fastapi.responses import JSONResponse
 import mysql.connector.pooling
+import json
 app=FastAPI()
 
-# 連線資料庫
 con = {
     "user": "debian-sys-maint",
     "password": "YNGJmkTnnhw4dDT2",
@@ -49,7 +49,7 @@ def process_to_JSON(result):
             "mrt": row[6],
             "lat": row[7],
             "lng": row[8],
-            "images": row[9]
+            "images": json.loads(row[9])
         }
         processed_data.append(processed_row)
     return processed_data
@@ -83,15 +83,13 @@ async def api_attraction(page: int = Query(..., description="Page number", ge=0)
             result=execute_query(query, (PAGE_SIZE, offset, ))
         if not result:
             raise HTTPException(status_code=404, detail="No matching attractions found")
-
-        
         json_result=process_to_JSON(result)
 
         # Check if there are more pages
-        has_next_page=len(result) == PAGE_SIZE
+        has_next_page=len(result)==PAGE_SIZE
         next_page=page+1 if has_next_page else None
 
-        json_response={"data": json_result, "nextPage": next_page}
+        json_response={"nextPage": next_page, "data": json_result}
         return JSONResponse(content=json_response)
     except HTTPException as http_exception:
         raise http_exception
@@ -104,7 +102,8 @@ async def api_attraction_id(attractionId: int):
         result=execute_query("SELECT * FROM taipei_spots WHERE id=%s;", (attractionId,))
         if result:
             json_result=process_to_JSON(result)
-            return JSONResponse(content=json_result)
+            json_response={"data": json_result[0]}
+            return JSONResponse(content=json_response)
         else:
             error_message={
                  "error": True,
