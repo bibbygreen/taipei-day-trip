@@ -3,19 +3,32 @@ from fastapi.responses import FileResponse
 from fastapi.responses import JSONResponse
 import mysql.connector.pooling
 import json
+from fastapi.middleware.cors import CORSMiddleware
 app=FastAPI()
 
-
 con = {
-    "user": "debian-sys-maint",
-    "password": "YNGJmkTnnhw4dDT2",
+    "user": "root",
+    "password": "root",
     "host": "localhost",
     "database": "taipei_day_trip"
 }
+# con = {
+#     "user": "debian-sys-maint",
+#     "password": "YNGJmkTnnhw4dDT2",
+#     "host": "localhost",
+#     "database": "taipei_day_trip"
+# }
 connection_pool = mysql.connector.pooling.MySQLConnectionPool(
     pool_name="my_pool",
     pool_size=5,
     **con
+)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://127.0.0.1:5500"],  # Replace with your frontend origin
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 def execute_query(sql, values=None):

@@ -1,9 +1,15 @@
 import json
 import mysql.connector.pooling
-
+import re
+# con = {
+#     "user": "debian-sys-maint",
+#     "password": "YNGJmkTnnhw4dDT2",
+#     "host": "localhost",
+#     "database": "taipei_day_trip"
+# }
 con = {
-    "user": "debian-sys-maint",
-    "password": "YNGJmkTnnhw4dDT2",
+    "user": "root",
+    "password": "root",
     "host": "localhost",
     "database": "taipei_day_trip"
 }
@@ -41,7 +47,6 @@ url = "data/taipei-attractions.json"
 with open(url, 'r', encoding='utf-8') as file:
     data = json.load(file)
 
-images=[]
 for i in range(len(data['result']['results'])):
     name=data['result']['results'][i]['name']
     category=data['result']['results'][i]['CAT']
@@ -54,10 +59,14 @@ for i in range(len(data['result']['results'])):
     lng=float(data['result']['results'][i]['longitude'])
 
     url_string=data['result']['results'][i]['file']
-    extensions = ['.jpg', '.JPG', '.png', '.PNG']
-    for ext in extensions:
-    # Split the URL string by the current extension and iterate over the parts
-        for part in url_string.split(ext)[:-1]:
-            images.append(part + ext)
-    images_json = json.dumps(images)
+    
+    file = url_string.split("https://")
+    images = []  # Reset the images list for each iteration
+
+    for j in file:
+        if j.endswith(".jpg") or j.endswith(".JPG"):
+            j = "https://" + j
+            images.append(j)
+
+    images_json=json.dumps(images)
     execute_query("INSERT INTO taipei_spots (name, category, description, address, transport, mrt, lat, lng, images) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)", (name, category, description, address, transport, mrt, lat, lng, images_json))

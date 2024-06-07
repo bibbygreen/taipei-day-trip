@@ -3,9 +3,75 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Index</title>
+  <title>台北一日遊</title>
+  <link rel="stylesheet" href="./styles/style.css" />
 </head>
 <body>
-  <h1>hello</h1>
+  <header>
+    <div class="navbar-container">
+      <div class="navbar">
+        <div class="headline">台北一日遊</div>
+        <div class="desktop-menu">
+            <a href="">預定行程</a>
+            <a href="">登入/註冊</a>
+        </div>
+      </div>
+    </div>
+    
+  </header>
+  <section class="title">
+    <div class="title-image"></div>
+    <div class="title-container">
+      <div class="title-block">
+        <div class="title-text">
+          <div class="slogan">輕鬆享受台北一日悠閒</div>
+          <div class="sub-slogan">探索每個角落，體驗城市的深度旅遊行程</div>
+        </div>
+        <div class="search">
+          <div class="search-bar">
+            <div class="search-query">
+              <input type="text" id="search-query-text" placeholder="輸入景點名稱查詢" />
+            </div>
+            <div class="magnifier" id="search-button"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <main>
+    <section class="main">
+      <div class="mrt-list-bar">
+        <div class="btn-left">
+          <img src="./pics/left-arrow.png" id="btn-left" alt="">
+        </div>
+        <div class="mrt-list-container">
+          <div class="mrt-list-block"></div>
+        </div>
+        <div class="btn-right">
+          <img src="./pics/right-arrow.png" id="btn-right" alt="">
+        </div>
+      </div>
+      <div class="attractions-container"></div>
+      <div id="load-more-trigger"></div>
+      <!-- <div class="attractions-container">
+        <div class="attraction-block">
+          <div class="attraction-img" style="background-image: url(https://www.travel.taipei/d_upload_ttn/sceneadmin/pic/11000848.jpg);"></div>
+          <div class="attraction-name">
+            <div class="attraction-name-txt">新北投溫泉區</div>
+          </div>
+          <div class="attraction-info">
+            <div class="attraction-info-mrt">新北投</div>
+            <div class="attraction-info-category">養生溫泉</div>
+          </div>
+        </div>
+      </div> -->
+    </section> 
+  </main>
+  
+  <footer class="footer">
+    <div class="footer-text">COPYRIGHT © 2021 台北一日遊</div>
+  </footer>
+
+  <script type="text/javascript" src="./script/index.js"></script>
 </body>
 </html>

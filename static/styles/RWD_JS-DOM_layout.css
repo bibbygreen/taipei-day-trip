@@ -1,0 +1,218 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+header{
+    display: flex;
+    justify-content: center;
+    position: sticky;
+}
+.navbar{
+    width: 1200px;
+    display: flex;
+    justify-content: space-between;
+    margin: 10px 0;
+    position: relative;
+    height: 30px;
+}
+.headline{
+    padding: 0 10px;
+    font-size: 20px;
+    font-weight: bold;
+    height: 30px;
+    line-height: 30px;
+}
+.desktop-menu{
+    display: flex;
+    height: 30px;
+    line-height: 30px;
+}
+.mobile-menu{
+    display: none;
+}
+.desktop-menu a{
+    text-decoration: none;
+    padding: 0 10px;
+    display: block;
+}
+li{
+    list-style: none;
+}
+.hide{
+    display: none;
+}
+.title{
+    height: 250px;
+    font-size: 40px;
+    font-weight: bold;
+    background-color: #ccebff;
+    text-align: center;
+    line-height: 250px;
+    margin: 0 0;
+}
+.SmallBox{
+    display: flex;
+    justify-content: center;
+    position: relative;
+}
+.SmallBox_object{
+    width: 380px;
+    height: 50px;
+    margin: 10px;
+    background-color: #dbf4fe;
+
+}
+.SmallBox_object_title{
+    font-size: 20px;
+    vertical-align: middle; 
+    line-height: 50px;
+    overflow:hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+
+}
+.SmallBox_pic{
+    width: 80px;
+    height: 50px;
+    vertical-align: middle;
+    float: left;
+    margin-right: 10px;
+    
+}
+.BigBox{
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    flex-wrap: wrap;   
+    margin: auto;
+}
+.BigBox_object{
+    /* background: url("./pic/scene.jpg") no-repeat center center; */
+    background-size: cover;
+    height: 240px;
+    width: 180px;
+    margin: auto;
+    position: relative;
+}
+.BigBox_object_title{
+    vertical-align: bottom;
+    font-size: 20px;
+    text-align: center;
+    color: white;
+    background: rgba(244, 0, 0, 0.4);
+    padding: 10px 0;
+    height: 20px;
+    width: 100%;
+    margin-top: 200px;
+    line-height: 1;
+    overflow:hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.BigBox_heart{
+    height: 20px;
+    width: 20px;
+    position: absolute;
+    top: 5%;
+    right: 5%;
+    z-index: 10;
+}
+@media (max-width:1920px) {
+    .BigBox{
+        width: 1200px;
+    }
+    .BigBox div:nth-child(5n-4){
+        /* background: url("./pic/scene.jpg") no-repeat center center; */
+        background-size: cover;
+        height: 240px;
+        width: 380px;
+        margin: 10px;
+    }
+}
+@media (max-width:1200px) {
+    /*螢幕寬度小於1200px，套用這個區塊css*/
+    .SmallBox{
+        flex-wrap: wrap;
+    }
+    .SmallBox_object{
+        width: 45%;
+        flex-grow: 1;
+    }
+    .BigBox{
+        width: 100%;
+    }
+    .BigBox_object{
+        width: 20%;
+        margin: 10px;
+        flex-grow: 1;
+    }
+    .BigBox div:nth-child(5n-4){
+        width: 20%;
+    } 
+    .BigBox div:nth-child(9){
+        width: 100%;
+    }
+}
+
+@media (max-width:600px) {
+    /*螢幕寬度小於600px，套用這個區塊css*/
+    .desktop-menu{
+        display: none;
+    } 
+    .mobile-menu{
+        display: block;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+    }
+    #close-icon{
+        position: absolute;
+        margin: 10px 5px;
+        right: 4%;
+        top: 8%;
+        z-index: 20;
+    }
+    #menu{
+        background-color: rgb(255, 255, 255);
+        width: 250px;
+        height: 500px; 
+        z-index: 10;
+        padding-bottom: 1000px;
+        box-shadow: -3px 0px 4px 0px rgba(64, 64, 64, 0.5);
+    } 
+    #menu ul{
+        height: 500px;
+    }
+    .mobile-menu img{
+        margin: 0 10px;
+    }
+    .mobile-menu a{
+        font-size: 20px;
+        display: block;
+        padding: 20px;
+        text-decoration: none;
+        text-align: center;
+        margin: 10px;
+        height: 20px;
+    }
+    .mobile-icon{
+        right: 10px;
+        align-items: right;
+    }
+    .SmallBox_object{
+        width: 90%;
+    }
+    .BigBox div:nth-child(5n-4){
+        width: 100%;
+    }
+    .BigBox_object{
+        width: 100%;
+        margin: 10px; 
+    } 
+}
+@media (max-width:400px) {
+    #menu{
+        width: 180px;
+    } 
+}
