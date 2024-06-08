@@ -9,13 +9,11 @@ let currentKeyword = "";  // Track the current keyword
 // Event listener
 searchButton.addEventListener("click", queryBySearchBar);
 
-
 let mrtListContainer=document.querySelector(".mrt-list-container");
 let mrtListBlock=document.querySelector(".mrt-list-block");
 // 取得捷運站列表
-// let url="/api/mrts";
-// let url="http://52.89.165.57:8000/api/mrts";
-let url="http://127.0.0.1:8000/api/mrts";
+let url="/api/mrts";
+// let url="http://127.0.0.1:8000/api/mrts";
 fetch(url)
   .then((response) => {
     if (!response.ok) {
@@ -75,8 +73,8 @@ mrtListBlock.addEventListener("click", function(event) {
 });
 // function start ----------
 function fetchAndRenderAttractions(page, keyword="") {
-  let url = `http://127.0.0.1:8000/api/attractions?page=${page}`;
-  // url = `/api/attractions?page=${page}`;
+  // let url = `http://127.0.0.1:8000/api/attractions?page=${page}`;
+  url = `/api/attractions?page=${page}`;
   if(keyword) {
     url+=`&keyword=${keyword}`;
   }
@@ -168,18 +166,12 @@ function createAttractionInfo(mrt, category) {
 
   return attractionInfo;
 }
-// query by search bar
-// function queryBySearchBar() {
-//   currentKeyword = searchQueryText.value;  // Update the current keyword
-//   nextPage = 0;  // Reset nextPage to 0 for a new search
-//   fetchAndRenderAttractions(nextPage, currentKeyword);
-//   searchQueryText.value = "";
-// }
+
 function queryBySearchBar(){
   currentKeyword = searchQueryText.value;  // Update the current keyword
   nextPage = 0;  // Reset nextPage to 0 for a new search
-  // url = `/api/attractions?page=0&keyword=${searchQueryText.value}`;
-  url = `http://127.0.0.1:8000/api/attractions?page=0&keyword=${currentKeyword}`;
+  url = `/api/attractions?page=0&keyword=${searchQueryText.value}`;
+  // url = `http://127.0.0.1:8000/api/attractions?page=0&keyword=${currentKeyword}`;
   url = encodeURI(url);
   fetch(url)
   .then((response) => {
@@ -215,7 +207,6 @@ function handleScroll() {
     }
   }
 }
-
 // Attach scroll event listener to the window
 window.addEventListener('scroll', handleScroll);
 
@@ -223,34 +214,3 @@ window.addEventListener('scroll', handleScroll);
 document.addEventListener("DOMContentLoaded", () => {
   fetchAndRenderAttractions(nextPage, currentKeyword);
 });
-// function renderNextPage(entries, observer) {
-//   entries.forEach(entry => {
-//     if (entry.isIntersecting && !isFetching && nextPage !== null) {
-//       fetchAndRenderAttractions(nextPage, currentKeyword);
-//     }
-//   });
-// }
-// IntersectionObserver callback
-// function loadMoreEntries(entries, observer) {
-//   entries.forEach(entry => {
-//     if (entry.isIntersecting && !isFetching && nextPage !== null) {
-//       fetchAndRenderAttractions(nextPage, currentKeyword);
-//       }
-//   });
-// }
-// // Set up IntersectionObserver
-// function setupIntersectionObserver() {
-//   const observer = new IntersectionObserver(loadMoreEntries, {
-//       root: null,  // Default is the viewport
-//       rootMargin: '0px',
-//       threshold: 1.0
-//   });   
-//   observer.observe(loadMoreTrigger);
-//   return observer; // Return the observer
-// }
-  
-// // Initial fetch when DOM content is loaded
-// document.addEventListener("DOMContentLoaded", () => {
-//   fetchAndRenderAttractions(nextPage);
-//   setupIntersectionObserver();
-// });

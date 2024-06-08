@@ -121,7 +121,7 @@ div.search-query input{
 }
 .magnifier{
     position: absolute;
-    background-image: url(../pics/magnifier.png);
+    background-image: url(/static/pics/magnifier.png);
     background-repeat: no-repeat;
     background-position: center;
     background-color: #448899;

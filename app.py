@@ -4,32 +4,36 @@ from fastapi.responses import JSONResponse
 import mysql.connector.pooling
 import json
 from fastapi.middleware.cors import CORSMiddleware
-app=FastAPI()
+from fastapi.staticfiles import StaticFiles
+from starlette.middleware.sessions import SessionMiddleware
 
-con = {
-    "user": "root",
-    "password": "root",
-    "host": "localhost",
-    "database": "taipei_day_trip"
-}
+app=FastAPI()
+app.add_middleware(SessionMiddleware, secret_key="qwert54321")
+app.mount("/static", StaticFiles(directory="static", html=True),name="static")
 # con = {
-#     "user": "debian-sys-maint",
-#     "password": "YNGJmkTnnhw4dDT2",
+#     "user": "root",
+#     "password": "root",
 #     "host": "localhost",
 #     "database": "taipei_day_trip"
 # }
+con = {
+    "user": "debian-sys-maint",
+    "password": "YNGJmkTnnhw4dDT2",
+    "host": "localhost",
+    "database": "taipei_day_trip"
+}
 connection_pool = mysql.connector.pooling.MySQLConnectionPool(
     pool_name="my_pool",
     pool_size=5,
     **con
 )
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://127.0.0.1:5500"],  # Replace with your frontend origin
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# app.add_middleware(
+#     CORSMiddleware,
+#     allow_origins=["http://127.0.0.1:5500"],  # Replace with your frontend origin
+#     allow_credentials=True,
+#     allow_methods=["*"],
+#     allow_headers=["*"],
+# )
 
 def execute_query(sql, values=None):
     connection = None
