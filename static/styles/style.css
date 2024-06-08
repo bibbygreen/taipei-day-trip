@@ -21,25 +21,24 @@
 }
 .headline{
     padding: 0 10px;
+    height: 30px;
+    line-height: 30px;
     color: #448899;
     font-size: 30px;
     font-weight: bold;
-    height: 30px;
-    line-height: 30px;
 }
 .desktop-menu{
     justify-content: space-between;
     display: flex;
+    text-align: right;
     height: 30px;
     line-height: 30px;
-    text-align: right;
-
 }
 .desktop-menu a{
+    display: block;
     text-decoration: none;
     padding: 0 10px;
     font-size: 16px;
-    display: block;
 }
 li{
     list-style: none;
@@ -65,13 +64,13 @@ li{
 }
 .title-container{
     position: absolute;
+    display: flex;
+    justify-content: center;
     height: 50%;
     top: 25%;
     width: 100%;
     left: 0%;
     margin: 10px;
-    display: flex;
-    justify-content: center;
 }
 .title-block{
     position: relative;
@@ -79,8 +78,8 @@ li{
     color: white;
 }
 .title-text{
-    height: 50%;
     position: relative;
+    height: 50%;
 }
 .slogan{
     font-size: 28px;
@@ -136,7 +135,6 @@ div.search-query input{
 main {
     display: flex;
     justify-content: center;
-    
     background-color: #FFFFFF;
     flex-grow: 1;
     padding: 20px 0px 40px 0px;
@@ -147,21 +145,19 @@ section.main {
     padding: 20px 0px 20px 0px;
 }
 .mrt-list-bar{
+    display: flex;
     justify-content: center;
     width: 100%;
     height: 85px;
-    display: flex;
-    
 }
-
 .mrt-list-container{
+    display: flex;
+    align-items: center;
     width: 1106px;
     height: 50px;
     white-space: nowrap;
     overflow-x: hidden;
     overflow-y: hidden;
-    display: flex;
-    align-items: center;
 }
 .mrt-list-block{
     display: flex;
@@ -170,6 +166,7 @@ section.main {
 .mrt-list-text{
     color: #666666;
     padding: 5px 15px 5px 15px;
+    cursor: pointer;
 }
 .btn-left{
     height: 50px;
@@ -275,7 +272,6 @@ div.btn-right img:hover {
 .attraction-info-category{
     color: #757575;
 }
-
 .footer {
     display: flex;
     justify-content: center;
@@ -287,3 +283,33 @@ div.btn-right img:hover {
     color: white;
     font-weight: bold;
   }
+@media (min-width: 601px) and (max-width: 1200px) {
+/*螢幕寬度小於600px，套用這個區塊css*/
+    .navbar{
+        width: 600px;
+    }
+    .search-bar{
+        width: 460px;
+    }
+    section.main {
+        width: 600px;
+    }
+    .mrt-list-container{
+        width: 500px;
+    }
+}
+
+@media (min-width: 361px) and (max-width: 600px) {
+    .navbar{
+        width: 360px;
+    }
+    .search-bar{
+        width: 330px;
+    }
+    section.main {
+        width: 360px;
+    }
+    .mrt-list-container{
+        width: 260px;
+    }
+}
