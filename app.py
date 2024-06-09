@@ -10,18 +10,18 @@ from starlette.middleware.sessions import SessionMiddleware
 app=FastAPI()
 app.add_middleware(SessionMiddleware, secret_key="qwert54321")
 app.mount("/static", StaticFiles(directory="static", html=True),name="static")
-# con = {
-#     "user": "root",
-#     "password": "root",
-#     "host": "localhost",
-#     "database": "taipei_day_trip"
-# }
 con = {
-    "user": "debian-sys-maint",
-    "password": "YNGJmkTnnhw4dDT2",
+    "user": "root",
+    "password": "root",
     "host": "localhost",
     "database": "taipei_day_trip"
 }
+# con = {
+#     "user": "debian-sys-maint",
+#     "password": "YNGJmkTnnhw4dDT2",
+#     "host": "localhost",
+#     "database": "taipei_day_trip"
+# }
 connection_pool = mysql.connector.pooling.MySQLConnectionPool(
     pool_name="my_pool",
     pool_size=5,

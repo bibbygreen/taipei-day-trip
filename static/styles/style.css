@@ -5,19 +5,31 @@
     margin: 0;
     padding: 0;
 }
-
+body{
+    font-family: "Noto Sans TC";
+}
+header{
+    display: flex;
+    justify-content: center;    
+    
+}
 .navbar-container{
+    display: flex;
+    /* 水平置中 */
+    justify-content: center;    
+    /* 垂直置中 */
+    align-items: center;  
     text-align: center;
+    width: 1200px;
+
 }
 .navbar{
     width: 1200px;
     display: flex;
-    align-items: center;
     justify-content: space-between;
     margin: 10px auto;
     height: 30px;
     text-align: center;
-
 }
 .headline{
     padding: 0 10px;
@@ -25,14 +37,13 @@
     line-height: 30px;
     color: #448899;
     font-size: 30px;
-    font-weight: bold;
+    font-weight: bold;  
 }
 .desktop-menu{
-    justify-content: space-between;
     display: flex;
-    text-align: right;
     height: 30px;
     line-height: 30px;
+    
 }
 .desktop-menu a{
     display: block;
@@ -201,7 +212,6 @@ div.btn-right img:hover {
     flex-wrap: wrap;
     justify-content: flex-start;
     align-content: center;
-    /* margin: auto; */
     margin-left: 0;
     margin-right: 0;
     /* padding: 15px; */
@@ -288,6 +298,9 @@ div.btn-right img:hover {
     .navbar{
         width: 600px;
     }
+    .title-block{
+        width: 600px;
+    }
     .search-bar{
         width: 460px;
     }
@@ -303,13 +316,36 @@ div.btn-right img:hover {
     .navbar{
         width: 360px;
     }
-    .search-bar{
+    .headline{
+        font-size: 28px;
+    }
+    .title-block{
         width: 330px;
+    }
+    .search-bar{
+        width: 285px;
     }
     section.main {
         width: 360px;
     }
     .mrt-list-container{
         width: 260px;
+    }
+    .attraction-block{
+        width: 320px;
+        margin-bottom: 70px;
+    }
+    .attraction-img{
+        width: 320px;
+        height: 235px;
+    }
+    .attraction-name{
+        width: 318px;
+        top: 195px;
+
+    }
+    .attraction-info{
+        top: 234px;
+        width: 100%;
     }
 }
