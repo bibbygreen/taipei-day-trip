@@ -4,8 +4,91 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Attraction</title>
+  <link rel="stylesheet" href="/static/styles/nav-footer.css" />
+  <link rel="stylesheet" href="/static/styles/attraction.css" />
 </head>
 <body>
-  
+  <header>
+    <div class="navbar">
+      <div class="headline">
+        <a href="/">台北一日遊</a>
+      </div>
+      <div class="desktop-menu">
+          <a href="">預定行程</a>
+          <a href="">登入/註冊</a>
+      </div>
+    </div>
+  </header>
+  <section class="section-profile">
+    <div class="profile-container">
+      <!-- left -->
+      <div class="profile-img" id="slide">
+        <div class="btn-block">
+          <img src="/static/pics/NB-left-arrow.png" id="btn-left" alt="Left Arrow">
+          <img src="/static/pics/NB-right-arrow.png" id="btn-right" alt="Right Arrow">
+        </div>
+      </div>
+      <div class="dots"></div>
+      <!-- right -->
+      <div class="profile-block">
+        <div class="profile-attraction-name"></div>
+        <div class="profile-attraction-cat-mrt"></div>
+        <div class="profile-grey-block">
+          <div class="profile-booking-title">訂購導覽行程</div>
+          <div class="profile-booking-subscribe">以此景點為中心的一日行程，帶您探索城市角落故事</div>
+          
+          <div class="profile-booking-date-box">
+            <div class="profile-booking-date">
+              <span>選擇日期：</span>
+              <input type="date" id="booking-date" name="booking-date">
+            </div>
+          </div>
+          <div class="profile-booking-time-box">
+            <div class="profile-booking-time">
+              <span>選擇時間：</span>
+              <div class="radio-container">
+                <input type="radio" id="booking-time-morning" name="booking-time" value="morning" onclick="radioToBookingFee('morning')">
+                <label class="circle-green" for="booking-time-morning">
+                  <div>上半天</div>
+                </label>
+
+                <input type="radio" id="booking-time-afternoon" name="booking-time" value="afternoon" onclick="radioToBookingFee('afternoon')">
+                <label class="circle-green" for="booking-time-afternoon">
+                  <div>下半天</div>
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="profile-booking-fee">
+            <span>導覽費用：</span>
+            <span id="booking-fee">2000</span>
+          </div>
+          <div>
+            <button class="booking-time-button">開始預約行程</button>
+          </div>          
+        </div>
+      </div>
+    </div>
+  </section>
+  <hr>
+  <main class="main-infos">
+    <div class="infos-container">
+      <div class="infos-description"></div>
+
+      <div class="infos-address-block">
+        <div class="infos-address-title">景點地址：</div>
+        <div class="infos-address-text"></div>
+      </div>
+
+      <div class="infos-transport-block">
+        <div class="infos-transport-title">交通方式：</div>
+        <div class="infos-transport-text"></div>
+      </div>
+    </div>
+  </main>
+  <footer class="footer">
+    <div class="footer-text">COPYRIGHT © 2021 台北一日遊</div>
+  </footer>
+  <script type="text/javascript" src="/static/script/attraction.js"></script>
 </body>
 </html>

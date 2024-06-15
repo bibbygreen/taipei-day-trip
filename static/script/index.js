@@ -1,11 +1,11 @@
-const searchButton = document.getElementById("search-button");
+const searchButton=document.getElementById("search-button");
 const searchQueryText=document.getElementById("search-query-text");
-const attractionsContainer = document.querySelector(".attractions-container");
-const loadMoreTrigger = document.getElementById('load-more-trigger');
+const attractionsContainer=document.querySelector(".attractions-container");
+const loadMoreTrigger=document.getElementById('load-more-trigger');
 
-let nextPage = 0;  // Start with the initial page
-let isFetching = false;  // To prevent multiple fetches
-let currentKeyword = "";  // Track the current keyword
+let nextPage=0;  // Start with the initial page
+let isFetching=false;  // To prevent multiple fetches
+let currentKeyword="";  // Track the current keyword
 // Event listener
 searchButton.addEventListener("click", queryBySearchBar);
 
@@ -24,9 +24,9 @@ fetch(url)
   .then((data) => {
     let mrts = data["data"];
     for (let mrt of mrts) {
-        let mrtListItem = document.createElement("div");
-        mrtListItem.textContent = mrt;
-        mrtListItem.className = "mrt-list-text";
+        let mrtListItem=document.createElement("div");
+        mrtListItem.textContent=mrt;
+        mrtListItem.className="mrt-list-text";
         // mrtListItem.addEventListener("click", searchByMRT);
         mrtListItem.addEventListener("click", function(event) {
           queryByClickMrt(event.target);
@@ -39,8 +39,8 @@ fetch(url)
   });
 
 // mrt scroll bar
-let btn_left = document.getElementById("btn-left");
-let btn_right = document.getElementById("btn-right");
+let btn_left=document.getElementById("btn-left");
+let btn_right=document.getElementById("btn-right");
 // Function to calculate scrollAmount based on the width of the container
 function calculateScrollAmount() {
   // Get the width of the container
@@ -74,7 +74,7 @@ mrtListBlock.addEventListener("click", function(event) {
 // function start ----------
 function fetchAndRenderAttractions(page, keyword="") {
   // let url = `http://127.0.0.1:8000/api/attractions?page=${page}`;
-  url = `/api/attractions?page=${page}`;
+  url=`/api/attractions?page=${page}`;
   if(keyword) {
     url+=`&keyword=${keyword}`;
   }
@@ -111,55 +111,58 @@ function renderAttractions(attractions) {
 }
 
 function createAttractionBlock(attraction) {
-  const attractionBlock = document.createElement("div");
-  attractionBlock.className = "attraction-block";
+  const attractionBlock=document.createElement("div");
+  attractionBlock.className="attraction-block";
+  attractionBlock.addEventListener("click", () => {
+    window.location.href=`/attraction/${attraction.id}`;
+  });
 
-  const attractionImg = createAttractionImage(attraction.images);
+  const attractionImg=createAttractionImage(attraction.images);
   attractionBlock.appendChild(attractionImg);
 
-  const attractionName = createAttractionName(attraction.name);
+  const attractionName=createAttractionName(attraction.name);
   attractionBlock.appendChild(attractionName);
 
-  const attractionInfo = createAttractionInfo(attraction.mrt, attraction.category);
+  const attractionInfo=createAttractionInfo(attraction.mrt, attraction.category);
   attractionBlock.appendChild(attractionInfo);
-
+  
   return attractionBlock;
 }
 
 function createAttractionImage(images) {
-  const attractionImg = document.createElement("div");
-  attractionImg.className = "attraction-img";
+  const attractionImg=document.createElement("div");
+  attractionImg.className="attraction-img";
   
   // Handle missing or empty images array
-  const firstImageUrl = images && images.length > 0 ? images[0] : 'default-image-url.jpg';
-  attractionImg.style.backgroundImage = `url(${firstImageUrl})`;
+  const firstImageUrl=images && images.length > 0 ? images[0] : 'default-image-url.jpg';
+  attractionImg.style.backgroundImage=`url(${firstImageUrl})`;
 
   return attractionImg;
 }
 
 function createAttractionName(name) {
-  const attractionName = document.createElement("div");
-  attractionName.className = "attraction-name";
+  const attractionName=document.createElement("div");
+  attractionName.className="attraction-name";
 
-  const attractionNameTxt = document.createElement("div");
-  attractionNameTxt.className = "attraction-name-txt";
-  attractionNameTxt.textContent = name || 'Unknown';
+  const attractionNameTxt=document.createElement("div");
+  attractionNameTxt.className="attraction-name-txt";
+  attractionNameTxt.textContent=name || 'Unknown';
 
   attractionName.appendChild(attractionNameTxt);
   return attractionName;
 }
 
 function createAttractionInfo(mrt, category) {
-  const attractionInfo = document.createElement("div");
-  attractionInfo.className = "attraction-info";
+  const attractionInfo=document.createElement("div");
+  attractionInfo.className="attraction-info";
 
-  const attractionInfoMrt = document.createElement("div");
-  attractionInfoMrt.className = "attraction-info-mrt";
-  attractionInfoMrt.textContent = mrt || '無';
+  const attractionInfoMrt=document.createElement("div");
+  attractionInfoMrt.className="attraction-info-mrt";
+  attractionInfoMrt.textContent=mrt || '無';
 
-  const attractionInfoCategory = document.createElement("div");
-  attractionInfoCategory.className = "attraction-info-category";
-  attractionInfoCategory.textContent = category || 'Unknown';
+  const attractionInfoCategory=document.createElement("div");
+  attractionInfoCategory.className="attraction-info-category";
+  attractionInfoCategory.textContent=category || 'Unknown';
 
   attractionInfo.appendChild(attractionInfoMrt);
   attractionInfo.appendChild(attractionInfoCategory);
@@ -168,11 +171,10 @@ function createAttractionInfo(mrt, category) {
 }
 
 function queryBySearchBar(){
-  currentKeyword = searchQueryText.value;  // Update the current keyword
-  nextPage = 0;  // Reset nextPage to 0 for a new search
-  url = `/api/attractions?page=0&keyword=${searchQueryText.value}`;
-  // url = `http://127.0.0.1:8000/api/attractions?page=0&keyword=${currentKeyword}`;
-  url = encodeURI(url);
+  currentKeyword=searchQueryText.value;  // Update the current keyword
+  nextPage=0;  // Reset nextPage to 0 for a new search
+  url=`/api/attractions?page=0&keyword=${searchQueryText.value}`;
+  url=encodeURI(url);
   fetch(url)
   .then((response) => {
     if (!response.ok) {
@@ -181,8 +183,8 @@ function queryBySearchBar(){
     return response.json();
   })
   .then((data) => {
-    attractions = data["data"];
-    nextPage = data["nextPage"];
+    attractions=data["data"];
+    nextPage=data["nextPage"];
     attractionsContainer.replaceChildren();  // Replace existing list
     renderAttractions(attractions);
     // if (nextPage != null){
@@ -191,7 +193,6 @@ function queryBySearchBar(){
     // currentKeyword="";
 });
 }
-
 function queryByClickMrt(target){
   const clickedMRTStation = target.textContent.trim();
   searchQueryText.value = clickedMRTStation;
