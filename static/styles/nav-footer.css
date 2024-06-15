@@ -1,0 +1,60 @@
+header{
+  display: flex;
+  justify-content: center;
+  border-bottom: 1px solid #E8E8E8;
+}
+.navbar{
+  display: flex;
+  justify-content: space-between;
+  width: 1200px;
+  height: 30px;
+  margin: 10px auto;
+}
+.headline a{
+  padding: 0 10px;
+  height: 30px;
+  line-height: 30px;
+  color: #448899;
+  font-size: 30px;
+  font-weight: bold; 
+  text-decoration: none;
+}
+.desktop-menu{
+  display: flex;
+  height: 30px;
+  line-height: 30px; 
+}
+.desktop-menu a{
+  display: block;
+  text-decoration: none;
+  padding: 0 10px;
+  font-size: 16px;
+}
+
+.footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 104px;
+  background-color: #757575;
+}
+.footer-text {
+  color: white;
+  font-weight: bold;
+}
+
+@media (min-width: 601px) and (max-width: 1200px) {
+/*螢幕寬度小於600px，套用這個區塊css*/
+  .navbar{
+    width: 600px;
+  }
+}
+  
+@media (min-width: 361px) and (max-width: 600px) {
+  .navbar{
+    width: 360px;
+  }
+  .headline{
+    font-size: 28px;
+  }
+}
