@@ -37,9 +37,12 @@ header{
     display: none;
     width: 540px;
     height: 406px;
-    background-position: top; 
     background-repeat: no-repeat;
-    background-size: cover;
+    /* background-position: top; 
+    background-size: cover; */
+    object-fit: cover;
+    object-position: center;
+    
 }
 #slide img.show {
     display: block;
@@ -56,7 +59,7 @@ header{
 .btn-left, .btn-right{
     width: 32px;
     height: 32px;
-    z-index: 1000;
+    z-index: 10;
 }
 #btn-left, #btn-right
 {
@@ -66,7 +69,7 @@ header{
     top: 50%;
     transform: translateY(-50%);
     cursor: pointer;
-    z-index: 1000;
+    z-index: 10;
     transition: all 0.3s ease;
     opacity: 40%;
 }
@@ -89,7 +92,7 @@ header{
     position: absolute;
     bottom: 20px;
     width: 540px;
-    z-index: 1000;
+    z-index: 10;
 }
 .dot {
     height: 10px;
@@ -337,6 +340,9 @@ hr{
 }
     
 @media (min-width: 361px) and (max-width: 600px) {
+    body{
+        overflow-x: hidden;
+    }
     .profile-container{
         display: block;
         justify-content: center;

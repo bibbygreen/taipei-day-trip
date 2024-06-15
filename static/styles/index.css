@@ -8,11 +8,6 @@
 body{
     font-family: "Noto Sans TC";
 }
-header{
-    display: flex;
-    justify-content: center;    
-    
-}
 .navbar-container{
     display: flex;
     /* 水平置中 */
@@ -23,46 +18,11 @@ header{
     width: 1200px;
 
 }
-.navbar{
-    width: 1200px;
-    display: flex;
-    justify-content: space-between;
-    margin: 10px auto;
-    height: 30px;
-    text-align: center;
-}
-.headline{
-    padding: 0 10px;
-    height: 30px;
-    line-height: 30px;
-    color: #448899;
-    font-size: 30px;
-    font-weight: bold;  
-}
-.desktop-menu{
-    display: flex;
-    height: 30px;
-    line-height: 30px;
-    
-}
-.desktop-menu a{
-    display: block;
-    text-decoration: none;
-    padding: 0 10px;
-    font-size: 16px;
-}
-li{
-    list-style: none;
-}
-.hide{
-    display: none;
-}
 .title{
     position: relative;
     height: 320px;
     box-shadow: 0 7px 5px -5px #868585;
 }
-
 .title-image{
     position: relative;
     background-image: url("../pics/welcome-image.png");
@@ -71,7 +31,6 @@ li{
     background-size: cover;
     height: 320px;
     z-index: -5;
-    
 }
 .title-container{
     position: absolute;
@@ -297,9 +256,6 @@ div.btn-right img:hover {
   }
 @media (min-width: 601px) and (max-width: 1200px) {
 /*螢幕寬度小於600px，套用這個區塊css*/
-    .navbar{
-        width: 600px;
-    }
     .title-block{
         width: 600px;
     }
@@ -315,12 +271,6 @@ div.btn-right img:hover {
 }
 
 @media (min-width: 361px) and (max-width: 600px) {
-    .navbar{
-        width: 360px;
-    }
-    .headline{
-        font-size: 28px;
-    }
     .title-block{
         width: 330px;
     }
