@@ -3,19 +3,13 @@ from fastapi.responses import FileResponse
 from fastapi.responses import JSONResponse
 import mysql.connector.pooling
 import json
-from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.sessions import SessionMiddleware
 
 app=FastAPI()
 app.add_middleware(SessionMiddleware, secret_key="qwert54321")
 app.mount("/static", StaticFiles(directory="static", html=True),name="static")
-# con = {
-#     "user": "root",
-#     "password": "root",
-#     "host": "localhost",
-#     "database": "taipei_day_trip"
-# }
+
 con = {
     "user": "debian-sys-maint",
     "password": "YNGJmkTnnhw4dDT2",
@@ -27,13 +21,7 @@ connection_pool = mysql.connector.pooling.MySQLConnectionPool(
     pool_size=5,
     **con
 )
-# app.add_middleware(
-#     CORSMiddleware,
-#     allow_origins=["http://127.0.0.1:5500"],  # Replace with your frontend origin
-#     allow_credentials=True,
-#     allow_methods=["*"],
-#     allow_headers=["*"],
-# )
+
 
 def execute_query(sql, values=None):
     connection = None
