@@ -1,3 +1,12 @@
+*{
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+body{
+  font-family: "Noto Sans TC";
+  color: #666666;
+}
 header{
   display: flex;
   justify-content: center;
@@ -24,11 +33,123 @@ header{
   height: 30px;
   line-height: 30px; 
 }
-.desktop-menu a{
+.desktop-menu div{
   display: block;
   text-decoration: none;
   padding: 0 10px;
   font-size: 16px;
+  cursor: pointer;
+}
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgb(0,0,0);
+  background-color: rgba(0,0,0,0.4);
+  padding-top: 60px;
+}
+.model-decorator{
+  position: absolute;
+  width: 100%;
+  height: 10px;
+  left: 0px;
+  top: 0px;
+  background: linear-gradient(270deg, #337788 0%, #66AABB 100%);
+  border: none;
+}
+.modal-content {
+  position: relative;
+  background-color: #ffffff;
+  margin: 5% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  /* width: 80%; */
+  max-width: 340px;
+}
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+.form-container {
+  display: none;
+}
+.form-container.active {
+  display: block;
+}
+.form-container.active h2{
+  font-size: 24px;
+  line-height: 24px;
+  font-weight: 700;
+  text-align: center;
+  margin: 10px auto;
+}
+.switch-link {
+  cursor: pointer;
+  text-decoration: none;
+}
+.form-group {
+  margin-bottom: 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+}
+.form-group input {
+  width: 310px;
+  padding: 8px;
+  border: 1px solid #CCCCCC;
+  border-radius: 5px;
+}
+.form-group button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  width: 310px;
+  height: 47px;
+  background-color: #448899;
+  border-radius: 5px;
+  color: white;
+  font-size: 19px;
+  font-weight: 400;
+  line-height: 47px;
+  border: none;
+  text-align: center;
+  margin: 10px;
+}
+.form-container p{
+  text-align: center;
+  font-size: 16px;
+  line-height: 13.3px;
+  font-weight: 500;
+  margin: 10px;
+}
+.error-message, .success-message {
+  margin-top: 10px;
+  font-weight: bold;
+  text-align: center;
+}
+.error-message {
+  color: red;
+}
+.success-message {
+  color: green;
 }
 
 .footer {
