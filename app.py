@@ -50,12 +50,37 @@ def create_access_token(data: dict, expires_delta: timedelta=None):
 
 def verify_token(token: str):
     try:
-        payload=jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        return payload
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        user_id = payload.get("id")
+            
+        connection = connection_pool.get_connection()
+        cursor = connection.cursor(dictionary=True)
+        
+        select_user_query = "SELECT id, name, email FROM members WHERE id = %s"
+        cursor.execute(select_user_query, (user_id,))
+        user_info = cursor.fetchone()
+        
+        if user_info:
+            return user_info
+        else:
+            raise HTTPException(status_code=404, detail="User not found")
+        
     except jwt.ExpiredSignatureError:
         raise HTTPException(status_code=401, detail="Token has expired")
     except jwt.InvalidTokenError:
         raise HTTPException(status_code=401, detail="Invalid token")
+    finally:
+        if cursor:
+            cursor.close()
+        if connection:
+            connection.close()
+    # try:
+    #     payload=jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+    #     return payload
+    # except jwt.ExpiredSignatureError:
+    #     raise HTTPException(status_code=401, detail="Token has expired")
+    # except jwt.InvalidTokenError:
+    #     raise HTTPException(status_code=401, detail="Invalid token")
 
 
 def execute_sql(sql, values=None):
@@ -114,7 +139,7 @@ async def signup(user_data: UserSignup):
         cursor.execute(add_member_query, member_data)
         
         connection.commit()
-        return JSONResponse(content={"ok": True, "message":"註冊成功"})
+        return JSONResponse(content={"ok": True})
 
     except mysql.connector.Error as e:
         return JSONResponse(content={"error": True, "message": f"Database error: {str(e)}"}, status_code=500)
@@ -139,8 +164,8 @@ async def signin(user_data: UserSignin):
 
         if result:
             user_id, username, user_email=result
-            access_token=create_access_token(data={"id": user_id, "name": username, "sub": user_email})
-            return JSONResponse(content={"access_token": access_token, "token_type": "bearer"})
+            access_token=create_access_token(data={"id": user_id, "name": username, "email": user_email})
+            return JSONResponse(content={"token": access_token})
         else:
             return JSONResponse(content={"error": True, "message": '帳號或密碼輸入有誤'}, status_code=400)
     
@@ -162,7 +187,12 @@ async def get_api_user_auth(request: Request):
     if auth_header:
         token=auth_header.split(" ")[1]
         user_info=verify_token(token)
-        return JSONResponse(content={"user_info": user_info})
+        response_data = {
+            "id": user_info["id"],
+            "name": user_info["name"],
+            "email": user_info["email"]
+        }          
+        return JSONResponse(content={"data": response_data})
     else:
         raise HTTPException(status_code=401, detail="Authorization header missing")
 

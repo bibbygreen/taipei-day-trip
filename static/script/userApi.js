@@ -69,7 +69,7 @@ document.addEventListener("DOMContentLoaded", function () {
         signUpError.textContent=data.message;
       } else {
         signUpError.textContent="";
-        signUpSuccess.textContent=data.message;
+        signUpSuccess.textContent="註冊成功";
       }
     })
     .catch((error) => {
@@ -94,8 +94,8 @@ document.addEventListener("DOMContentLoaded", function () {
     .then((response) => response.json())
     .then((data) => {
       signInError.textContent="";
-      if (data.access_token) {
-        localStorage.setItem('token', data.access_token);
+      if (data.token) {
+        localStorage.setItem('token', data.token);
         location.reload();  // Refresh the page on successful sign-in
       } else {
         signInError.textContent=data.message;
