@@ -17,13 +17,20 @@ document.addEventListener("DOMContentLoaded", () => {
     console.error("Invalid URL format. Unable to extract attraction ID.");
     }
 });
+
 async function renderAttraction(attractionID) {
   const url=`/api/attraction/${attractionID}`;
-  const response=await fetch(url, { method: "GET" });
+  try{
+    const response=await fetch(url, { method: "GET" });
+    if(!response.ok){
+      throw new Error('Network response was not ok');
+    }
   const data=await response.json();
   displayAttraction(data); // Function to update the DOM with the attraction data
+  } catch(error){
+    console.error('There has been a problem with your fetch operation:', error);
+  }
 }
-
 function displayAttraction(data) {
   document.querySelector('.profile-attraction-name').textContent=data.data.name;
   document.querySelector('.profile-attraction-cat-mrt').textContent=`${data.data.category} at ${data.data.mrt}`;
@@ -41,18 +48,41 @@ function updateSlider(images) {
   // slide.innerHTML=''; // Clear existing images
   // dotsContainer.innerHTML=''; // Clear existing dots
 
+  const preloadPromises=[];
+
   images.forEach((url, index) => {
-    const img=document.createElement('img');
-    img.classList.add('attraction-img');
+    const img=new Image();
     img.src=url;
-    slide.appendChild(img);
+    const preloadPromise=new Promise((resolve, reject) =>{
+      img.onload= () =>{
+        resolve(img);
+      };
+      img.onerror = () =>{
+        reject(new Error(`Failed to load image: ${url}`));
+      };
+    });
+
+    preloadPromises.push(preloadPromise);
+
+    const carouselImg=document.createElement('img');
+    carouselImg.classList.add('attraction-img');
+    carouselImg.src=url;
+    slide.appendChild(carouselImg);
 
     const dot=document.createElement('div');
     dot.classList.add('dot');
     dot.dataset.index=index;
     dotsContainer.appendChild(dot);
   });
-  initializeSlider();
+
+  Promise.all(preloadPromises)
+    .then(() => {
+      initializeSlider();
+    })
+    .catch((error) => {
+      console.error('Error preloading images:', error);
+      initializeSlider();
+    })
 }
 function initializeSlider() {
   setTimeout(() => {
