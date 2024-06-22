@@ -14,8 +14,8 @@
         <a href="/">台北一日遊</a>
       </div>
       <div class="desktop-menu">
-          <a href="">預定行程</a>
-          <a href="">登入/註冊</a>
+        <div>預定行程</div>
+        <div id="signin-signup"></div>
       </div>
     </div>
   </header>
@@ -70,6 +70,52 @@
       </div>
     </div>
   </section>
+  <section id="signin-modal">
+    <div id="myModal" class="modal">
+      <div class="modal-content">
+        <div class="model-decorator"></div>
+        <span class="close">&times;</span>
+        <form action="/api/user/auth" method="PUT" id="signInForm" class="form-container active">
+          <h2>登入會員帳號</h2>
+          <div class="form-group">
+            <label for="signin-email"></label>
+            <input type="email" id="signin-email" name="email" placeholder="輸入電子信箱" required>
+          </div>
+          <div class="form-group">
+            <label for="signin-password"></label>
+            <input type="password" id="signin-password" name="password" placeholder="輸入密碼" required>
+          </div>
+          <div class="form-group">
+            <button type="submit">登入帳戶</button>
+          </div>
+          <p>還沒有帳戶？<span class="switch-link" id="switchToSignUp">點此註冊</span></p>
+          <div id="signin-error" class="error-message"></div>
+        </form>
+  
+        <form action="/api/user" method="POST" id="signUpForm" class="form-container">
+          <h2>註冊會員帳號</h2>
+          <div class="form-group">
+            <label for="signup-name"></label>
+            <input type="name" id="signup-name" name="name" placeholder="輸入姓名" required>
+          </div>
+          <div class="form-group">
+            <label for="signup-email"></label>
+            <input type="email" id="signup-email" name="email" placeholder="輸入電子信箱" required>
+          </div>
+          <div class="form-group">
+            <label for="signup-password"></label>
+            <input type="password" id="signup-password" name="password" placeholder="輸入密碼" required>
+          </div>
+          <div class="form-group">
+            <button type="submit">註冊新帳戶</button>
+          </div>
+          <p>已經有帳戶了？<span class="switch-link" id="switchToSignIn">點此登入</span></p>
+          <div id="signup-error" class="error-message"></div>
+          <div id="signup-success" class="success-message"></div>
+        </form>
+      </div>
+    </div>
+  </section>
   <hr>
   <main class="main-infos">
     <div class="infos-container">
@@ -90,5 +136,6 @@
     <div class="footer-text">COPYRIGHT © 2021 台北一日遊</div>
   </footer>
   <script type="text/javascript" src="/static/script/attraction.js"></script>
+  <script type="text/javascript" src="/static/script/userApi.js"></script>
 </body>
 </html>

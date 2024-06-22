@@ -1,39 +1,99 @@
 from fastapi import *
-from fastapi.responses import FileResponse
-from fastapi.responses import JSONResponse
+from fastapi.responses import FileResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
 import mysql.connector.pooling
 import json
-from fastapi.staticfiles import StaticFiles
-from starlette.middleware.sessions import SessionMiddleware
+from pydantic import BaseModel
+from datetime import datetime, timedelta
+import jwt
 
 app=FastAPI()
-app.add_middleware(SessionMiddleware, secret_key="qwert54321")
 app.mount("/static", StaticFiles(directory="static", html=True),name="static")
 
-con = {
+# JWT configuration
+SECRET_KEY="4321rewq"
+ALGORITHM="HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES=10080
+
+class UserSignup(BaseModel):
+    name: str
+    email: str
+    password: str
+
+class UserSignin(BaseModel):
+    email: str
+    password: str
+
+con={
     "user": "debian-sys-maint",
     "password": "YNGJmkTnnhw4dDT2",
     "host": "localhost",
     "database": "taipei_day_trip"
 }
-connection_pool = mysql.connector.pooling.MySQLConnectionPool(
+connection_pool=mysql.connector.pooling.MySQLConnectionPool(
     pool_name="my_pool",
     pool_size=5,
     **con
 )
+connection=connection_pool.get_connection()
+cursor=connection.cursor()
 
+def create_access_token(data: dict, expires_delta: timedelta=None):
+    to_encode=data.copy()
+    if expires_delta:
+        expire=datetime.now() + expires_delta
+    else:
+        expire=datetime.now() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    to_encode.update({"exp": expire})
+    encoded_jwt=jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
 
-def execute_query(sql, values=None):
-    connection = None
+def verify_token(token: str):
     try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        user_id = payload.get("id")
+            
         connection = connection_pool.get_connection()
+        cursor = connection.cursor(dictionary=True)
+        
+        select_user_query = "SELECT id, name, email FROM members WHERE id = %s"
+        cursor.execute(select_user_query, (user_id,))
+        user_info = cursor.fetchone()
+        
+        if user_info:
+            return user_info
+        else:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token has expired")
+    except jwt.InvalidTokenError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+    finally:
+        if cursor:
+            cursor.close()
+        if connection:
+            connection.close()
+    # try:
+    #     payload=jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+    #     return payload
+    # except jwt.ExpiredSignatureError:
+    #     raise HTTPException(status_code=401, detail="Token has expired")
+    # except jwt.InvalidTokenError:
+    #     raise HTTPException(status_code=401, detail="Invalid token")
+
+
+def execute_sql(sql, values=None):
+    connection=None
+    try:
+        connection=connection_pool.get_connection()
         if connection.is_connected():
-            cursor = connection.cursor()
+            cursor=connection.cursor()
             if values:
                 cursor.execute(sql, values)
             else:
                 cursor.execute(sql)
-            result = cursor.fetchall()
+            result=cursor.fetchall()
             return result
     except mysql.connector.Error as e:
         print(f"Error: {e.msg}")
@@ -59,7 +119,83 @@ def process_to_JSON(result):
         }
         processed_data.append(processed_row)
     return processed_data
-       
+
+@app.post("/api/user")
+async def signup(user_data: UserSignup):
+    connection=None
+    cursor=None
+    try:
+        connection=connection_pool.get_connection()
+        cursor=connection.cursor()
+
+        select_email_query="SELECT * FROM members WHERE email=%s"
+        cursor.execute(select_email_query, (user_data.email,))
+        result=cursor.fetchone()
+        if result:
+            return JSONResponse(content={"error": True, "message": "該帳號已被註冊，請重新輸入"}, status_code=400)
+        
+        add_member_query="INSERT INTO members (name, email, password) VALUES (%s, %s, %s)"
+        member_data=(user_data.name, user_data.email, user_data.password)
+        cursor.execute(add_member_query, member_data)
+        
+        connection.commit()
+        return JSONResponse(content={"ok": True})
+
+    except mysql.connector.Error as e:
+        return JSONResponse(content={"error": True, "message": f"Database error: {str(e)}"}, status_code=500)
+
+    except Exception as e:
+        return JSONResponse(content={"error": True, "message": f"Unexpected error: {str(e)}"}, status_code=500)
+    finally:
+        if cursor:
+            cursor.close()
+        if connection:
+            connection.close()
+
+@app.put("/api/user/auth")
+async def signin(user_data: UserSignin):
+    try:
+        connection=connection_pool.get_connection()
+        cursor=connection.cursor()
+
+        select_email_command="SELECT id, name, email FROM members WHERE email=%s AND password=%s"
+        cursor.execute(select_email_command, (user_data.email, user_data.password))
+        result=cursor.fetchone()
+
+        if result:
+            user_id, username, user_email=result
+            access_token=create_access_token(data={"id": user_id, "name": username, "email": user_email})
+            return JSONResponse(content={"token": access_token})
+        else:
+            return JSONResponse(content={"error": True, "message": '帳號或密碼輸入有誤'}, status_code=400)
+    
+    except mysql.connector.Error as e:
+        return JSONResponse(content={"error": True, "message": f"Database error: {str(e)}"}, status_code=500)
+    
+    except Exception as e:
+        return JSONResponse(content={"error": True, "message": f"Unexpected error: {str(e)}"}, status_code=500)
+    
+    finally:
+        if cursor:
+            cursor.close()
+        if connection:
+            connection.close()
+
+@app.get(path="/api/user/auth")
+async def get_api_user_auth(request: Request):
+    auth_header=request.headers.get("Authorization")
+    if auth_header:
+        token=auth_header.split(" ")[1]
+        user_info=verify_token(token)
+        response_data = {
+            "id": user_info["id"],
+            "name": user_info["name"],
+            "email": user_info["email"]
+        }          
+        return JSONResponse(content={"data": response_data})
+    else:
+        raise HTTPException(status_code=401, detail="Authorization header missing")
+
 # Static Pages (Never Modify Code in this Block)
 @app.get("/", include_in_schema=False)
 async def index(request: Request):
@@ -75,7 +211,7 @@ async def thankyou(request: Request):
 	return FileResponse("./static/thankyou.html", media_type="text/html")
 
 @app.get("/api/attractions")
-async def api_attraction(page: int = Query(..., description="Page number", ge=0), keyword: str = Query(None, description="Keyword for search")):
+async def api_attraction(page: int=Query(..., description="Page number", ge=0), keyword: str=Query(None, description="Keyword for search")):
     try:
         PAGE_SIZE=12 
         offset=page*PAGE_SIZE
@@ -83,10 +219,10 @@ async def api_attraction(page: int = Query(..., description="Page number", ge=0)
         if keyword:
             query="SELECT * FROM taipei_spots WHERE name LIKE %s  OR mrt LIKE %s ORDER BY id LIMIT %s OFFSET %s;"
             keyword=f'%{keyword}%'
-            result=execute_query(query, (keyword, keyword, PAGE_SIZE, offset, ))
+            result=execute_sql(query, (keyword, keyword, PAGE_SIZE, offset, ))
         else:
             query="SELECT * FROM taipei_spots ORDER BY id LIMIT %s OFFSET %s;"
-            result=execute_query(query, (PAGE_SIZE, offset, ))
+            result=execute_sql(query, (PAGE_SIZE, offset, ))
         if not result:
             raise HTTPException(status_code=404, detail="No matching attractions found")
         json_result=process_to_JSON(result)
@@ -105,7 +241,7 @@ async def api_attraction(page: int = Query(..., description="Page number", ge=0)
 @app.get("/api/attraction/{attractionId}")
 async def api_attraction_id(attractionId: int):
     try:
-        result=execute_query("SELECT * FROM taipei_spots WHERE id=%s;", (attractionId,))
+        result=execute_sql("SELECT * FROM taipei_spots WHERE id=%s;", (attractionId,))
         if result:
             json_result=process_to_JSON(result)
             json_response={"data": json_result[0]}
@@ -122,7 +258,8 @@ async def api_attraction_id(attractionId: int):
 @app.get("/api/mrts")
 async def api_mrts():
     try:
-        result=execute_query("SELECT mrt, COUNT(name) as count FROM taipei_spots GROUP BY mrt ORDER BY count DESC;")
+        result=execute_sql("SELECT mrt, COUNT(name) as count FROM taipei_spots GROUP BY mrt ORDER BY count DESC;")
         return JSONResponse(content={"data":[row[0] for row in result]})
     except Exception as e:
         return JSONResponse(status_code=500, content={"error":True, "message": str(e)})
+    
