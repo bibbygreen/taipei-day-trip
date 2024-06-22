@@ -55,7 +55,6 @@ document.addEventListener("DOMContentLoaded", function () {
       email: formData.get("email"),
       password: formData.get("password"),
     };
-
     fetch("/api/user", {
       method: "POST",
       headers: {

@@ -35,7 +35,6 @@ connection_pool=mysql.connector.pooling.MySQLConnectionPool(
     pool_size=5,
     **con
 )
-
 connection=connection_pool.get_connection()
 cursor=connection.cursor()
 
@@ -98,28 +97,23 @@ def process_to_JSON(result):
 
 @app.post("/api/user")
 async def signup(user_data: UserSignup):
-# async def signup(request: Request, name: str=Form(None), email: str=Form(None), password: str=Form(None)):
     connection=None
     cursor=None
     try:
         connection=connection_pool.get_connection()
         cursor=connection.cursor()
 
-        # Check if email already exists
         select_email_query="SELECT * FROM members WHERE email=%s"
         cursor.execute(select_email_query, (user_data.email,))
         result=cursor.fetchone()
         if result:
             return JSONResponse(content={"error": True, "message": "該帳號已被註冊，請重新輸入"}, status_code=400)
         
-        # Insert new member
         add_member_query="INSERT INTO members (name, email, password) VALUES (%s, %s, %s)"
         member_data=(user_data.name, user_data.email, user_data.password)
         cursor.execute(add_member_query, member_data)
         
-        # Commit the transaction
         connection.commit()
-
         return JSONResponse(content={"ok": True, "message":"註冊成功"})
 
     except mysql.connector.Error as e:
