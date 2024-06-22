@@ -1,12 +1,11 @@
 from fastapi import *
-from fastapi.responses import FileResponse, JSONResponse, HTMLResponse
+from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 import mysql.connector.pooling
 import json
 from pydantic import BaseModel
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 import jwt
-import traceback
 
 app=FastAPI()
 app.mount("/static", StaticFiles(directory="static", html=True),name="static")
@@ -15,6 +14,15 @@ app.mount("/static", StaticFiles(directory="static", html=True),name="static")
 SECRET_KEY="4321rewq"
 ALGORITHM="HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES=10080
+
+class UserSignup(BaseModel):
+    name: str
+    email: str
+    password: str
+
+class UserSignin(BaseModel):
+    email: str
+    password: str
 
 con={
     "user": "debian-sys-maint",
@@ -27,9 +35,8 @@ connection_pool=mysql.connector.pooling.MySQLConnectionPool(
     pool_size=5,
     **con
 )
-# Get a connection from the pool
+
 connection=connection_pool.get_connection()
-# Create a cursor from the connection
 cursor=connection.cursor()
 
 def create_access_token(data: dict, expires_delta: timedelta=None):
@@ -90,7 +97,8 @@ def process_to_JSON(result):
     return processed_data
 
 @app.post("/api/user")
-async def signup(request: Request, name: str=Form(None), email: str=Form(None), password: str=Form(None)):
+async def signup(user_data: UserSignup):
+# async def signup(request: Request, name: str=Form(None), email: str=Form(None), password: str=Form(None)):
     connection=None
     cursor=None
     try:
@@ -99,14 +107,14 @@ async def signup(request: Request, name: str=Form(None), email: str=Form(None), 
 
         # Check if email already exists
         select_email_query="SELECT * FROM members WHERE email=%s"
-        cursor.execute(select_email_query, (email,))
+        cursor.execute(select_email_query, (user_data.email,))
         result=cursor.fetchone()
         if result:
             return JSONResponse(content={"error": True, "message": "該帳號已被註冊，請重新輸入"}, status_code=400)
         
         # Insert new member
         add_member_query="INSERT INTO members (name, email, password) VALUES (%s, %s, %s)"
-        member_data=(name, email, password)
+        member_data=(user_data.name, user_data.email, user_data.password)
         cursor.execute(add_member_query, member_data)
         
         # Commit the transaction
@@ -115,11 +123,9 @@ async def signup(request: Request, name: str=Form(None), email: str=Form(None), 
         return JSONResponse(content={"ok": True, "message":"註冊成功"})
 
     except mysql.connector.Error as e:
-        traceback.print_exc()
         return JSONResponse(content={"error": True, "message": f"Database error: {str(e)}"}, status_code=500)
 
     except Exception as e:
-        traceback.print_exc()
         return JSONResponse(content={"error": True, "message": f"Unexpected error: {str(e)}"}, status_code=500)
     finally:
         if cursor:
@@ -128,13 +134,13 @@ async def signup(request: Request, name: str=Form(None), email: str=Form(None), 
             connection.close()
 
 @app.put("/api/user/auth")
-async def signin(email: str=Form(None), password: str=Form(None)):
+async def signin(user_data: UserSignin):
     try:
         connection=connection_pool.get_connection()
         cursor=connection.cursor()
 
         select_email_command="SELECT id, name, email FROM members WHERE email=%s AND password=%s"
-        cursor.execute(select_email_command, (email, password))
+        cursor.execute(select_email_command, (user_data.email, user_data.password))
         result=cursor.fetchone()
 
         if result:
@@ -151,8 +157,10 @@ async def signin(email: str=Form(None), password: str=Form(None)):
         return JSONResponse(content={"error": True, "message": f"Unexpected error: {str(e)}"}, status_code=500)
     
     finally:
-        cursor.close()
-        connection.close()
+        if cursor:
+            cursor.close()
+        if connection:
+            connection.close()
 
 @app.get(path="/api/user/auth")
 async def get_api_user_auth(request: Request):

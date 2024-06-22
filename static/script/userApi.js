@@ -33,9 +33,9 @@ document.addEventListener("DOMContentLoaded", function () {
         closeModal();
     }
   }
-//   document.getElementsByClassName('close')[0].onclick=function() {
-//     closeModal();
-//   }
+  document.getElementsByClassName('close')[0].onclick=function() {
+    closeModal();
+  }
 
   switchToSignUp.onclick=function () {
     signInForm.classList.remove("active");
@@ -50,12 +50,21 @@ document.addEventListener("DOMContentLoaded", function () {
   signUpForm.addEventListener("submit", function (event) {
     event.preventDefault();
     const formData=new FormData(signUpForm);
+    const data= {
+      name: formData.get("name"),
+      email: formData.get("email"),
+      password: formData.get("password"),
+    };
+
     fetch("/api/user", {
       method: "POST",
-      body: formData
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
     })
-    .then(response => response.json())
-    .then(data => {
+    .then((response) => response.json())
+    .then((data) => {
       if (data.error) {
         signUpSuccess.textContent="";
         signUpError.textContent=data.message;
@@ -64,7 +73,7 @@ document.addEventListener("DOMContentLoaded", function () {
         signUpSuccess.textContent=data.message;
       }
     })
-    .catch(error => {
+    .catch((error) => {
       signUpError.textContent=error.message;
     });
   });
@@ -72,12 +81,19 @@ document.addEventListener("DOMContentLoaded", function () {
   signInForm.addEventListener("submit", function (event) {
     event.preventDefault();
     const formData=new FormData(signInForm);
+    const data= {
+      email: formData.get("email"),
+      password: formData.get("password"),
+    };
     fetch("/api/user/auth", {
       method: "PUT",
-      body: formData
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
     })
-    .then(response => response.json())
-    .then(data => {
+    .then((response) => response.json())
+    .then((data) => {
       signInError.textContent="";
       if (data.access_token) {
         localStorage.setItem('token', data.access_token);
@@ -86,24 +102,45 @@ document.addEventListener("DOMContentLoaded", function () {
         signInError.textContent=data.message;
       }
     })
-    .catch(error => {
+    .catch((error) => {
       signInError.textContent=error.message;
     });
   });
-  function checkTokenInLocalStorage() {
-    const token=localStorage.getItem('token');
-    if (token) {
-      navSignIn.textContent="登出系統";
-      navSignIn.onclick=handleSignOut;
-    } else {
-      navSignIn.textContent="登入/註冊"; 
+
+  function checkUserSignInStatus() {
+    const token=localStorage.getItem('token')
+    if(token) {
+      fetch("/api/user/auth", {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      })
+      .then(response => {
+        if(!response.ok) {
+          throw new Error('Token verification failed');
+        }
+        return response.json();
+      })
+      .then(data => {
+        navSignIn.textContent="登出系統";
+        navSignIn.onclick=handleSignOut;
+      })
+      .catch(error => {
+        console.error(error);
+        localStorage.removeItem('token');
+        navSignIn.textContent="登入/註冊";
+        navSignIn.onclick=clickToShowModal;
+      });
+    }else{
+      navSignIn.textContent="登入/註冊";
       navSignIn.onclick=clickToShowModal;
     }
   }
   function handleSignOut() {
     localStorage.removeItem('token');
-    checkTokenInLocalStorage();
+    checkUserSignInStatus();
   }
-  checkTokenInLocalStorage();
+  checkUserSignInStatus();
 });
 
