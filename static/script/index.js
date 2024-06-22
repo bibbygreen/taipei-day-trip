@@ -13,7 +13,6 @@ let mrtListContainer=document.querySelector(".mrt-list-container");
 let mrtListBlock=document.querySelector(".mrt-list-block");
 // 取得捷運站列表
 let url="/api/mrts";
-// let url="http://127.0.0.1:8000/api/mrts";
 fetch(url)
   .then((response) => {
     if (!response.ok) {
@@ -27,7 +26,6 @@ fetch(url)
         let mrtListItem=document.createElement("div");
         mrtListItem.textContent=mrt;
         mrtListItem.className="mrt-list-text";
-        // mrtListItem.addEventListener("click", searchByMRT);
         mrtListItem.addEventListener("click", function(event) {
           queryByClickMrt(event.target);
         });
@@ -41,37 +39,35 @@ fetch(url)
 // mrt scroll bar
 let btn_left=document.getElementById("btn-left");
 let btn_right=document.getElementById("btn-right");
-// Function to calculate scrollAmount based on the width of the container
+
 function calculateScrollAmount() {
-  // Get the width of the container
   const containerWidth = mrtListContainer.offsetWidth;
   return containerWidth/2; 
 }
-// Function to handle scrolling to the left
+
 function scrollLeft() {
   mrtListContainer.scrollBy({
     left: -calculateScrollAmount(),
-    behavior: 'smooth' // Use smooth scrolling behavior
+    behavior: 'smooth'
   });
 }
-// Function to handle scrolling to the right
+
 function scrollRight() {
   mrtListContainer.scrollBy({
     left: calculateScrollAmount(),
-    behavior: 'smooth' // Use smooth scrolling behavior
+    behavior: 'smooth'
   });
 }
 btn_left.addEventListener("click", scrollLeft);
 btn_right.addEventListener("click", scrollRight);
 
-// Attach click event listener to the MRT Station names
 mrtListBlock.addEventListener("click", function(event) {
   // Check if the click occurred on an MRT Station name
   if (event.target.classList.contains("mrt-list-text")) {
     queryByClickMrt(event.target);
   }
 });
-// function start ----------
+
 function fetchAndRenderAttractions(page, keyword="") {
   // let url = `http://127.0.0.1:8000/api/attractions?page=${page}`;
   url=`/api/attractions?page=${page}`;
@@ -79,7 +75,7 @@ function fetchAndRenderAttractions(page, keyword="") {
     url+=`&keyword=${keyword}`;
   }
   url=encodeURI(url);
-  isFetching=true;  // Set fetching flag to true
+  isFetching=true;
 
   fetch(url)
     .then((response) => {
@@ -95,11 +91,11 @@ function fetchAndRenderAttractions(page, keyword="") {
       }
       renderAttractions(data.data);
       nextPage=data.nextPage;
-      isFetching=false;  // Reset fetching flag
+      isFetching=false;
     })
     .catch((error) => {
       console.error('There has been a problem with your fetch operation:', error);
-      isFetching = false;  // Reset fetching flag on error
+      isFetching = false;
     });
   }
 
@@ -128,14 +124,30 @@ function createAttractionBlock(attraction) {
   
   return attractionBlock;
 }
-
+function preloadImage(url) {
+  return new Promise((resolve, reject) => {
+    const img=new Image();
+    img.src=url;
+    img.onload = () => resolve(url);
+    img.onerror = () => reject(url);
+  });
+}
 function createAttractionImage(images) {
   const attractionImg=document.createElement("div");
   attractionImg.className="attraction-img";
   
   // Handle missing or empty images array
-  const firstImageUrl=images && images.length > 0 ? images[0] : 'default-image-url.jpg';
-  attractionImg.style.backgroundImage=`url(${firstImageUrl})`;
+  const defaultImageUrl='data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
+  const firstImageUrl=images && images.length > 0 ? images[0] : defaultImageUrl;
+  /////
+  // attractionImg.style.backgroundImage=`url(${firstImageUrl})`;
+  /////
+  preloadImage(firstImageUrl).then((url) => {
+    attractionImg.style.backgroundImage = `url(${url})`;
+  }).catch((url) => {
+    console.error(`Failed to preload image: ${url}`);
+    attractionImg.style.backgroundImage = `url(default-image-url.jpg)`;
+  });
 
   return attractionImg;
 }
@@ -198,7 +210,6 @@ function queryByClickMrt(target){
   searchQueryText.value = clickedMRTStation;
   queryBySearchBar();
 }
-// Function to handle window scroll event
 function handleScroll() {
   // Check if the user has scrolled to the bottom of the page
   if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
