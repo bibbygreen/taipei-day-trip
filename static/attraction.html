@@ -15,7 +15,7 @@
       </div>
       <div class="desktop-menu">
         <div>預定行程</div>
-        <div id="signin-signup">登入/註冊</div>
+        <div id="signin-signup"></div>
       </div>
     </div>
   </header>
@@ -75,7 +75,7 @@
       <div class="modal-content">
         <div class="model-decorator"></div>
         <span class="close">&times;</span>
-        <div id="signInForm" class="form-container active">
+        <form action="/api/user/auth" method="PUT" id="signInForm" class="form-container active">
           <h2>登入會員帳號</h2>
           <div class="form-group">
             <label for="signin-email"></label>
@@ -86,12 +86,13 @@
             <input type="password" id="signin-password" name="password" placeholder="輸入密碼" required>
           </div>
           <div class="form-group">
-            <button>登入帳戶</button>
+            <button type="submit">登入帳戶</button>
           </div>
           <p>還沒有帳戶？<span class="switch-link" id="switchToSignUp">點此註冊</span></p>
-        </div>
+          <div id="signin-error" class="error-message"></div>
+        </form>
   
-        <div id="signUpForm" class="form-container">
+        <form action="/api/user" method="POST" id="signUpForm" class="form-container">
           <h2>註冊會員帳號</h2>
           <div class="form-group">
             <label for="signup-name"></label>
@@ -106,10 +107,12 @@
             <input type="password" id="signup-password" name="password" placeholder="輸入密碼" required>
           </div>
           <div class="form-group">
-            <button>註冊新帳戶</button>
+            <button type="submit">註冊新帳戶</button>
           </div>
           <p>已經有帳戶了？<span class="switch-link" id="switchToSignIn">點此登入</span></p>
-        </div>
+          <div id="signup-error" class="error-message"></div>
+          <div id="signup-success" class="success-message"></div>
+        </form>
       </div>
     </div>
   </section>
@@ -133,6 +136,6 @@
     <div class="footer-text">COPYRIGHT © 2021 台北一日遊</div>
   </footer>
   <script type="text/javascript" src="/static/script/attraction.js"></script>
-  <script type="text/javascript" src="/static/script/signIn.js"></script>
+  <script type="text/javascript" src="/static/script/userApi.js"></script>
 </body>
 </html>
