@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
   const modal=document.getElementById("myModal");
   const navSignIn=document.getElementById('signin-signup');
+  const navBookingTour=document.getElementById('booking-tour');
   const signInForm=document.getElementById("signInForm");
   const signUpForm=document.getElementById("signUpForm");
   const switchToSignUp=document.getElementById("switchToSignUp");
@@ -8,8 +9,11 @@ document.addEventListener("DOMContentLoaded", function () {
   const signInError=document.getElementById("signin-error");
   const signUpError=document.getElementById("signup-error");
   const signUpSuccess=document.getElementById("signup-success");
+  const StartBooking=document.getElementById("start-booking");
+  // const bookingInfoBox=document.querySelector('.booking-info-box');
 
   modal.style.display="none";
+  //Modal 登入註冊互動視窗
   function clickToShowModal() {
     modal.style.display="block";
   }
@@ -41,11 +45,62 @@ document.addEventListener("DOMContentLoaded", function () {
     signInForm.classList.remove("active");
     signUpForm.classList.add("active");
     signInError.textContent="";
-  }
+  };
   switchToSignIn.onclick=function () {
     signUpForm.classList.remove("active");
     signInForm.classList.add("active");
+  };
+
+  async function verifyUserSignInToken() {
+    const token=localStorage.getItem('token');
+    if(token) {
+       const response = await fetch("/api/user/auth", {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      });
+      if (!response.ok) {
+        throw new Error('Token verification failed');
+      }
+      return await response.json();
+    }else{
+      return null;
+      // return Promise.reject(new Error('No token found'));
+    }
   }
+
+  function checkUserSignInStatus() {
+    verifyUserSignInToken()
+      .then(data => {
+        if(data){
+          navSignIn.textContent="登出系統";
+          navSignIn.onclick=handleSignOut;
+        }else{
+          navSignIn.textContent="登入/註冊";
+          navSignIn.onclick=clickToShowModal;
+        }  
+      })
+      .catch(error => {
+        console.error(error);
+        localStorage.removeItem('token');
+        navSignIn.textContent = "登入/註冊";
+        navSignIn.onclick = clickToShowModal;
+      });
+  }
+
+  function handleSignOut() {
+    localStorage.removeItem('token');
+    checkUserSignInStatus();
+  }
+  
+  function getAttractionIDFromURL(){
+    const href=location.href;
+    const pattern=/^http:.+\/attraction\/(\d+)$/;
+    const match=href.match(pattern);
+    return match ? match[1] : null;
+  }
+  
 
   signUpForm.addEventListener("submit", function (event) {
     event.preventDefault();
@@ -105,41 +160,57 @@ document.addEventListener("DOMContentLoaded", function () {
       signInError.textContent=error.message;
     });
   });
-
-  function checkUserSignInStatus() {
-    const token=localStorage.getItem('token')
-    if(token) {
-      fetch("/api/user/auth", {
-        method: "GET",
-        headers: {
-          "Authorization": `Bearer ${token}`
-        }
-      })
-      .then(response => {
-        if(!response.ok) {
-          throw new Error('Token verification failed');
-        }
-        return response.json();
-      })
-      .then(data => {
-        navSignIn.textContent="登出系統";
-        navSignIn.onclick=handleSignOut;
-      })
-      .catch(error => {
-        console.error(error);
-        localStorage.removeItem('token');
-        navSignIn.textContent="登入/註冊";
-        navSignIn.onclick=clickToShowModal;
-      });
-    }else{
-      navSignIn.textContent="登入/註冊";
-      navSignIn.onclick=clickToShowModal;
+  StartBooking.addEventListener("click", function(){
+    const date=document.getElementById('booking-date').value;
+    const timeOfDay = document.querySelector('input[name="booking-time"]:checked') ? document.querySelector('input[name="booking-time"]:checked').value : null;
+    
+    if (!date || !timeOfDay) {
+      alert("請選取日期與時間");
+      return;
     }
-  }
-  function handleSignOut() {
-    localStorage.removeItem('token');
-    checkUserSignInStatus();
-  }
+
+    verifyUserSignInToken()
+      .then(user => {
+        if(!user) {
+          console.log("No user logged in");
+          clickToShowModal();
+          return;
+        }
+
+        const attractionID=getAttractionIDFromURL();
+        const fee=document.getElementById('booking-fee').textContent;
+
+        const bookingData={
+          attractionId: attractionID,
+          date: date,
+          time: timeOfDay,
+          price: parseInt(fee)
+        };
+
+        fetch("/api/booking",{
+          method: "POST",
+          headers:{
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${localStorage.getItem('token')}`
+          },
+          body: JSON.stringify(bookingData)
+        })
+        .then(response => response.json())
+        .then(data => {
+          if(data.ok){
+            // console.log("ok");
+            window.location.href="/booking";
+          }else{
+            console.error(data.message);
+          }
+        })
+        .catch(error =>{
+          console.error("Error creating booking:", error);
+        });
+      })
+  })
   checkUserSignInStatus();
+  
 });
+
 

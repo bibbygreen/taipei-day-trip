@@ -236,7 +236,7 @@ header{
 #booking-fee::after{
     content: " 元";
 }
-.booking-time-button{
+.btn-start-booking{
     width: 154px;
     height: 36px;
     background-color: #448899;
@@ -248,6 +248,7 @@ header{
     border: 0px;
     margin-top: 25px;
     margin-bottom: 40px;  
+    cursor: pointer;
 }
 hr{
     width: 1200px;

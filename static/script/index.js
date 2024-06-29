@@ -225,4 +225,51 @@ window.addEventListener('scroll', handleScroll);
 // Initial fetch when DOM content is loaded
 document.addEventListener("DOMContentLoaded", () => {
   fetchAndRenderAttractions(nextPage, currentKeyword);
+
+const navSignIn=document.getElementById('signin-signup');
+function clickToShowModal() {
+  modal.style.display="block";
+}
+async function verifyUserSignInToken() {
+  const token=localStorage.getItem('token');
+  if(token) {
+     const response = await fetch("/api/user/auth", {
+      method: "GET",
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
+    });
+    if (!response.ok) {
+      throw new Error('Token verification failed');
+    }
+    return await response.json();
+  }else{
+    return null;
+    // return Promise.reject(new Error('No token found'));
+  }
+}
+
+function checkUserSignInStatus() {
+  verifyUserSignInToken()
+    .then(data => {
+      if(data){
+        navSignIn.textContent="登出系統";
+        navSignIn.onclick=handleSignOut;
+      }else{
+        navSignIn.textContent="登入/註冊";
+        navSignIn.onclick=clickToShowModal;
+      }  
+    })
+    .catch(error => {
+      console.error(error);
+      localStorage.removeItem('token');
+      navSignIn.textContent = "登入/註冊";
+      navSignIn.onclick = clickToShowModal;
+    });
+}
+function handleSignOut() {
+  localStorage.removeItem('token');
+  checkUserSignInStatus();
+}
+checkUserSignInStatus();
 });

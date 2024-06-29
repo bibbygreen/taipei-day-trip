@@ -5,6 +5,7 @@ import mysql.connector.pooling
 import json
 from pydantic import BaseModel
 from datetime import datetime, timedelta
+from typing import List, Dict
 import jwt
 
 app=FastAPI()
@@ -23,6 +24,21 @@ class UserSignup(BaseModel):
 class UserSignin(BaseModel):
     email: str
     password: str
+
+class BookingData(BaseModel):
+    attractionId: int
+    date: str
+    time: str
+    price: int
+
+class BookingTable(BaseModel):
+    id: int
+    user_id: int
+    attractionId: int
+    date: str
+    time: str
+    price: int
+     
 
 con={
     "user": "debian-sys-maint",
@@ -52,6 +68,9 @@ def verify_token(token: str):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         user_id = payload.get("id")
+
+        if not user_id:
+            raise HTTPException(status_code=401, detail="Invalid token")
             
         connection = connection_pool.get_connection()
         cursor = connection.cursor(dictionary=True)
@@ -69,19 +88,13 @@ def verify_token(token: str):
         raise HTTPException(status_code=401, detail="Token has expired")
     except jwt.InvalidTokenError:
         raise HTTPException(status_code=401, detail="Invalid token")
+    except mysql.connector.Error as e:
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
     finally:
         if cursor:
             cursor.close()
         if connection:
             connection.close()
-    # try:
-    #     payload=jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-    #     return payload
-    # except jwt.ExpiredSignatureError:
-    #     raise HTTPException(status_code=401, detail="Token has expired")
-    # except jwt.InvalidTokenError:
-    #     raise HTTPException(status_code=401, detail="Invalid token")
-
 
 def execute_sql(sql, values=None):
     connection=None
@@ -195,6 +208,98 @@ async def get_api_user_auth(request: Request):
         return JSONResponse(content={"data": response_data})
     else:
         raise HTTPException(status_code=401, detail="Authorization header missing")
+
+@app.post("/api/booking")
+async def create_booking(request: Request, booking_data: BookingData):
+    token=request.headers.get("Authorization").split(" ")[1]
+    user_info=verify_token(token)
+    user_id=user_info["id"]
+    try:
+        connection=connection_pool.get_connection()
+        cursor=connection.cursor()
+
+        select_booking_query="SELECT * FROM bookings WHERE user_id = %s"
+        cursor.execute(select_booking_query, (user_id,))
+        existing_booking=cursor.fetchone()
+
+        if existing_booking:
+            update_booking_query="""
+                UPDATE bookings
+                SET attraction_id = %s, date =%s, time =%s, price =%s
+                WHERE user_id = %s
+            """
+            cursor.execute(update_booking_query, (booking_data.attractionId, booking_data.date, booking_data.time, booking_data.price, user_id))
+        else:
+            insert_booking_query = """
+                INSERT INTO bookings (user_id, attraction_id, date, time, price)
+                VALUES (%s, %s, %s, %s, %s)
+            """
+            cursor.execute(insert_booking_query, (user_id, booking_data.attractionId, booking_data.date, booking_data.time, booking_data.price)) 
+        connection.commit()
+        return JSONResponse(content={"ok": True})
+    
+    except mysql.connector.Error as e:
+        return JSONResponse(content={"error":True, "message":f"Database error: {str(e)}"}, status_code=500)
+    except Exception as e:
+        return JSONResponse(content={"error": True, "message": f"Unexpected error: {str(e)}"}, status_code=500)
+    finally:
+        if cursor:
+            cursor.close()
+        if connection:
+            connection.close()
+
+@app.get("/api/booking")
+async def get_user_booking_data(request: Request):
+    token=request.headers.get("Authorization").split(" ")[1]
+    user_info=verify_token(token)
+    user_id=user_info["id"]
+    user_name=user_info["name"]
+    try:
+        connection=connection_pool.get_connection()
+        cursor=connection.cursor()
+
+        select_query="""
+            SELECT bookings.date, bookings.time, bookings.price, taipei_spots.name AS attraction_name, taipei_spots.address AS attraction_address, taipei_spots.images
+            FROM bookings
+            INNER JOIN taipei_spots ON bookings.attraction_id = taipei_spots.id
+            WHERE bookings.user_id = %s;    
+        """
+        cursor.execute(select_query,(user_id,))
+        booking_data=cursor.fetchone()
+
+        if booking_data:
+            attraction = {
+                "name": booking_data[3],  
+                "address": booking_data[4],
+                "images": booking_data[5] 
+            }
+            booking = {
+                "date": booking_data[0].isoformat(),
+                "time": booking_data[1],
+                "price": booking_data[2] 
+            }
+        else:
+            attraction = {}
+            booking = {}
+
+        response_data={
+            "attraction": attraction,
+            "date": booking.get("date", ""),
+            "time": booking.get("time", ""),
+            "price": booking.get("price", "")
+        }
+        return JSONResponse(content={"data": response_data})
+    
+    except mysql.connector.Error as e:
+        print(f"MySQL Error fetching bookings: {str(e)}")
+        raise HTTPException(status_code=500, detail="Database error")
+    except Exception as e:
+        print(f"Error fetching bookings: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+    finally:
+        cursor.close()
+        connection.close()
 
 # Static Pages (Never Modify Code in this Block)
 @app.get("/", include_in_schema=False)
