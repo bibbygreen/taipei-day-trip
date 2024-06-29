@@ -300,6 +300,33 @@ async def get_user_booking_data(request: Request):
     finally:
         cursor.close()
         connection.close()
+        
+@app.delete("/api/booking")
+async def delete_user_booking_data(request: Request):
+    token = request.headers.get("Authorization").split(" ")[1]
+    user_info = verify_token(token)
+    user_id = user_info["id"]
+    
+    try:
+        connection = connection_pool.get_connection()
+        cursor = connection.cursor()
+
+        delete_query = """
+            DELETE FROM bookings
+            WHERE user_id = %s;
+        """
+        cursor.execute(delete_query, (user_id,))
+        connection.commit()
+        return JSONResponse(content={"ok":True})
+    except mysql.connector.Error as e:
+        print(f"MySQL Error deleting booking data: {str(e)}")
+        raise HTTPException(status_code=500, detail="Database error")
+    except Exception as e:
+        print(f"Error deleting booking data: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+    finally:
+        cursor.close()
+        connection.close()
 
 # Static Pages (Never Modify Code in this Block)
 @app.get("/", include_in_schema=False)

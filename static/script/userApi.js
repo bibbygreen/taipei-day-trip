@@ -1,4 +1,24 @@
+async function verifyUserSignInToken() {
+  const token=localStorage.getItem('token');
+  if(token) {
+     const response = await fetch("/api/user/auth", {
+      method: "GET",
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
+    });
+    if (!response.ok) {
+      throw new Error('Token verification failed');
+    }
+    return await response.json();
+  }else{
+    return null;
+    // return Promise.reject(new Error('No token found'));
+  }
+}
+
 document.addEventListener("DOMContentLoaded", function () {
+  
   const modal=document.getElementById("myModal");
   const navSignIn=document.getElementById('signin-signup');
   const navBookingTour=document.getElementById('booking-tour');
@@ -10,7 +30,8 @@ document.addEventListener("DOMContentLoaded", function () {
   const signUpError=document.getElementById("signup-error");
   const signUpSuccess=document.getElementById("signup-success");
   const StartBooking=document.getElementById("start-booking");
-  // const bookingInfoBox=document.querySelector('.booking-info-box');
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('booking-date').min = today;
 
   modal.style.display="none";
   //Modal 登入註冊互動視窗
@@ -51,25 +72,6 @@ document.addEventListener("DOMContentLoaded", function () {
     signInForm.classList.add("active");
   };
 
-  async function verifyUserSignInToken() {
-    const token=localStorage.getItem('token');
-    if(token) {
-       const response = await fetch("/api/user/auth", {
-        method: "GET",
-        headers: {
-          "Authorization": `Bearer ${token}`
-        }
-      });
-      if (!response.ok) {
-        throw new Error('Token verification failed');
-      }
-      return await response.json();
-    }else{
-      return null;
-      // return Promise.reject(new Error('No token found'));
-    }
-  }
-
   function checkUserSignInStatus() {
     verifyUserSignInToken()
       .then(data => {
@@ -93,7 +95,24 @@ document.addEventListener("DOMContentLoaded", function () {
     localStorage.removeItem('token');
     checkUserSignInStatus();
   }
-  
+  function redirectToBookingPage() {
+    window.location.href = "/booking";
+  }
+
+  navBookingTour.onclick = function () {
+    verifyUserSignInToken()
+      .then(data => {
+        if (data) {
+          redirectToBookingPage();
+        } else {
+          clickToShowModal();
+        }
+      })
+      .catch(error => {
+        console.error(error);
+        clickToShowModal();
+      });
+  }
   function getAttractionIDFromURL(){
     const href=location.href;
     const pattern=/^http:.+\/attraction\/(\d+)$/;
@@ -176,7 +195,6 @@ document.addEventListener("DOMContentLoaded", function () {
           clickToShowModal();
           return;
         }
-
         const attractionID=getAttractionIDFromURL();
         const fee=document.getElementById('booking-fee').textContent;
 
@@ -210,7 +228,7 @@ document.addEventListener("DOMContentLoaded", function () {
       })
   })
   checkUserSignInStatus();
-  
+  redirectUnauthorizedUser();
 });
 
 

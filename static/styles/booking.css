@@ -26,14 +26,42 @@ body{
   margin-bottom: 15px;
 
 }
+.booking-info-greeting-delete{
+  font-size: 19px;
+  font-weight: bold;
+  line-height: 16px;
+  text-align: left;
+  margin-bottom: 15px;
+  margin-top: 20px;
+  width: 1000px;
+  position: relative;
+  left: 10%;
+}
 .booking-info-box{
   display: flex;
+  width: 1000px;
+  margin:20px 10px
+}
+.booking-info-box-delete{
+  display: flex;
+  width: 1000px;
+  margin:20px 10px;
+  position: relative;
+  left: 10%;
 }
 .attraction-img img{
   width: 250px;
   height: 200px;
   object-fit: cover;
   object-position: center;
+}
+
+.btn-delete{
+  width: 30px;
+  height: 30px;
+  position: relative;
+  left: 70%;
+  cursor: pointer;
 }
 .booking-info-text{
   margin-left: 20px;
@@ -49,10 +77,9 @@ body{
 
 }
 .booking-date, .booking-time, .booking-fee, .booking-attraction-address{
-
   font-size: 16px;
   font-weight: 400;
-  line-height: 13.3px;
+  line-height: 18px;
   text-align: left;
   margin-bottom: 20px;
 
@@ -123,6 +150,18 @@ hr{
 .btn-confirm-div{
   float: right;
 }
+@media (min-width: 1400px) and (max-width: 1900px) {
+  .booking-info-greeting-delete{
+    position: relative;
+    left: 20%;
+  }
+
+  .booking-info-box-delete{
+    margin:20px 10px;
+    position: relative;
+    left: 20%;
+  }
+}
 
 @media (min-width: 601px) and (max-width: 1200px) {
   /*螢幕寬度小於600px，套用這個區塊css*/
@@ -139,6 +178,31 @@ hr{
   .booking-summary-container{
     width: 600px;
     margin: 20px 10px;
+  }
+  .booking-info-greeting-delete{
+    width: 600px;
+    position: relative;
+    left: 15%;
+  }
+  .booking-info-box{
+    display: flex;
+    width: 600px;
+    margin:20px 10px
+  }
+  .booking-info-box-delete{
+    width: 600px;
+    margin:20px 10px;
+    position: relative;
+    left: 15%;
+  }
+  .attraction-img img{
+    width: 340px;
+    height: 256px;
+  }
+  
+  .btn-delete{
+    position: relative;
+    left: 43%;
   }
 }
   
@@ -159,5 +223,14 @@ hr{
   .booking-summary-container{
     width: 360px;
     margin: 20px 10px;
+  }
+  .attraction-img img{
+    width: 340px;
+    height: 256px;
+  }
+  .btn-delete{
+    position: relative;
+    left: 31%;
+    transform: translate(-0, 240px);
   }
 }
