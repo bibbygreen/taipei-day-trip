@@ -228,7 +228,6 @@ document.addEventListener("DOMContentLoaded", function () {
       })
   })
   checkUserSignInStatus();
-  redirectUnauthorizedUser();
 });
 
 

@@ -242,7 +242,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const signUpError=document.getElementById("signup-error");
   const signUpSuccess=document.getElementById("signup-success");
 
-
   modal.style.display="none";
   //Modal 登入註冊互動視窗
   function clickToShowModal() {

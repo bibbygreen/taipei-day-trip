@@ -328,20 +328,6 @@ async def delete_user_booking_data(request: Request):
         cursor.close()
         connection.close()
 
-# Static Pages (Never Modify Code in this Block)
-@app.get("/", include_in_schema=False)
-async def index(request: Request):
-	return FileResponse("./static/index.html", media_type="text/html")
-@app.get("/attraction/{id}", include_in_schema=False)
-async def attraction(request: Request, id: int):
-	return FileResponse("./static/attraction.html", media_type="text/html")
-@app.get("/booking", include_in_schema=False)
-async def booking(request: Request):
-	return FileResponse("./static/booking.html", media_type="text/html")
-@app.get("/thankyou", include_in_schema=False)
-async def thankyou(request: Request):
-	return FileResponse("./static/thankyou.html", media_type="text/html")
-
 @app.get("/api/attractions")
 async def api_attraction(page: int=Query(..., description="Page number", ge=0), keyword: str=Query(None, description="Keyword for search")):
     try:
@@ -394,4 +380,17 @@ async def api_mrts():
         return JSONResponse(content={"data":[row[0] for row in result]})
     except Exception as e:
         return JSONResponse(status_code=500, content={"error":True, "message": str(e)})
-    
+
+# Static Pages (Never Modify Code in this Block)
+@app.get("/", include_in_schema=False)
+async def index(request: Request):
+	return FileResponse("./static/index.html", media_type="text/html")
+@app.get("/attraction/{id}", include_in_schema=False)
+async def attraction(request: Request, id: int):
+	return FileResponse("./static/attraction.html", media_type="text/html")
+@app.get("/booking", include_in_schema=False)
+async def booking(request: Request):
+	return FileResponse("./static/booking.html", media_type="text/html")
+@app.get("/thankyou", include_in_schema=False)
+async def thankyou(request: Request):
+	return FileResponse("./static/thankyou.html", media_type="text/html")

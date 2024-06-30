@@ -7,6 +7,7 @@
 body{
     font-family: "Noto Sans TC";
     color: #666666;
+    overflow-x: hidden;
 }
 .booking-summary{
   display: flex;
@@ -14,7 +15,6 @@ body{
   margin-top: 30px;
   margin-bottom: 30px;
 }
-
 .booking-summary-container{
   width: 1000px;
 }
@@ -24,30 +24,11 @@ body{
   line-height: 16px;
   text-align: left;
   margin-bottom: 15px;
-
-}
-.booking-info-greeting-delete{
-  font-size: 19px;
-  font-weight: bold;
-  line-height: 16px;
-  text-align: left;
-  margin-bottom: 15px;
-  margin-top: 20px;
-  width: 1000px;
-  position: relative;
-  left: 10%;
 }
 .booking-info-box{
   display: flex;
   width: 1000px;
   margin:20px 10px
-}
-.booking-info-box-delete{
-  display: flex;
-  width: 1000px;
-  margin:20px 10px;
-  position: relative;
-  left: 10%;
 }
 .attraction-img img{
   width: 250px;
@@ -55,7 +36,6 @@ body{
   object-fit: cover;
   object-position: center;
 }
-
 .btn-delete{
   width: 30px;
   height: 30px;
@@ -64,17 +44,17 @@ body{
   cursor: pointer;
 }
 .booking-info-text{
+  width: 200px;
   margin-left: 20px;
 }
 .booking-attraction-name{
   font-size: 16px;
   font-weight: 700;
-  line-height: 13.3px;
+  line-height: 19px;
   text-align: left;
   color: #448899;
   margin-top: 10px;
   margin-bottom: 30px;
-
 }
 .booking-date, .booking-time, .booking-fee, .booking-attraction-address{
   font-size: 16px;
@@ -82,7 +62,6 @@ body{
   line-height: 18px;
   text-align: left;
   margin-bottom: 20px;
-
 }
 hr{
   width: 1200px;
@@ -150,26 +129,27 @@ hr{
 .btn-confirm-div{
   float: right;
 }
-@media (min-width: 1400px) and (max-width: 1900px) {
-  .booking-info-greeting-delete{
-    position: relative;
-    left: 20%;
-  }
-
-  .booking-info-box-delete{
-    margin:20px 10px;
-    position: relative;
-    left: 20%;
-  }
+.booking-info-delete-container{
+  width: 1000px;
+  display: block;
+  height: 100px;
+  margin: 20px auto;
+}
+.booking-info-greeting-delete{
+  font-size: 19px;
+  font-weight: bold;
+  line-height: 16px;
+  text-align: left;
+  margin-bottom: 20px;
+}
+.booking-info-box-delete{
+  display: flex;
 }
 
 @media (min-width: 601px) and (max-width: 1200px) {
   /*螢幕寬度小於600px，套用這個區塊css*/
   .booking-summary-container{
     width: 600px;
-  }
-  .booking-info-box{
-    display: block;
   }
   .contact-info-container, .credit-card-info-container{
     width: 600px;
@@ -179,30 +159,30 @@ hr{
     width: 600px;
     margin: 20px 10px;
   }
-  .booking-info-greeting-delete{
-    width: 600px;
-    position: relative;
-    left: 15%;
-  }
   .booking-info-box{
     display: flex;
     width: 600px;
     margin:20px 10px
   }
-  .booking-info-box-delete{
+  .booking-info-text{
+    margin-left: 0px;
+  }
+  .booking-info-greeting-delete, .booking-info-box-delete{
+    margin-left: 30px;
+  }
+  .booking-info-delete-container{
     width: 600px;
-    margin:20px 10px;
-    position: relative;
-    left: 15%;
   }
   .attraction-img img{
     width: 340px;
     height: 256px;
   }
-  
   .btn-delete{
     position: relative;
-    left: 43%;
+    left: 38%;
+  }
+  hr{
+    width: 600px;
   }
 }
   
@@ -214,7 +194,15 @@ hr{
     width: 360px;
   }
   .booking-info-box{
+    width: 360px;
     display: block;
+  }
+  .booking-info-greeting-delete, .booking-info-box-delete{
+    margin-top: 10px;
+    margin-left: 20px;
+  }
+  .booking-info-delete-container{
+    width: 360px;
   }
   .contact-info-container, .credit-card-info-container{
     width: 360px;
@@ -228,9 +216,20 @@ hr{
     width: 340px;
     height: 256px;
   }
+  .booking-info-text{
+    width: 330px;
+    margin-left: 10px;
+  }
+  .booking-attraction-name,.booking-date, .booking-time, .booking-fee, .booking-attraction-address{
+    /* width: 330px; */
+    margin-bottom: 20px;
+  }
   .btn-delete{
     position: relative;
-    left: 31%;
+    left: 85%;
     transform: translate(-0, 240px);
+  }
+  hr{
+    width: 360px;
   }
 }
