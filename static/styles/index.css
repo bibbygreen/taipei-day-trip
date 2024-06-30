@@ -8,15 +8,8 @@
 body{
     font-family: "Noto Sans TC";
 }
-.navbar-container{
-    display: flex;
-    /* 水平置中 */
-    justify-content: center;    
-    /* 垂直置中 */
-    align-items: center;  
-    text-align: center;
+.navbar{
     width: 1200px;
-
 }
 .title{
     position: relative;
@@ -256,6 +249,9 @@ div.btn-right img:hover {
   }
 @media (min-width: 601px) and (max-width: 1200px) {
 /*螢幕寬度小於600px，套用這個區塊css*/
+    .navbar{
+        width: 600px;
+    }
     .title-block{
         width: 600px;
     }
