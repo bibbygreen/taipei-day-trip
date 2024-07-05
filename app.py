@@ -7,6 +7,9 @@ from pydantic import BaseModel
 from datetime import datetime, timedelta
 from typing import List, Dict
 import jwt
+import random
+import string
+import requests
 
 app=FastAPI()
 app.mount("/static", StaticFiles(directory="static", html=True),name="static")
@@ -39,6 +42,30 @@ class BookingTable(BaseModel):
     time: str
     price: int
      
+class Attraction(BaseModel):
+    # id: int
+    name: str
+    address: str
+    image: str
+
+class Trip(BaseModel):
+    attraction: Attraction
+    date: str
+    time: str
+
+class Contact(BaseModel):
+    name: str
+    email: str
+    phone: str
+
+class Order(BaseModel):
+    price: int
+    trip: Trip
+    contact: Contact
+
+class OrderData(BaseModel):
+    prime: str
+    order: Order
 
 con={
     "user": "debian-sys-maint",
@@ -296,7 +323,6 @@ async def get_user_booking_data(request: Request):
     except Exception as e:
         print(f"Error fetching bookings: {str(e)}")
         raise HTTPException(status_code=500, detail="Internal server error")
-
     finally:
         cursor.close()
         connection.close()
@@ -327,6 +353,98 @@ async def delete_user_booking_data(request: Request):
     finally:
         cursor.close()
         connection.close()
+
+@app.post("/api/orders")
+async def api_orders(request: Request, order_data: OrderData):
+    try:
+        token = request.headers.get("Authorization").split(" ")[1]
+        user_info = verify_token(token)
+        user_id = user_info["id"]
+        
+        # Generate a random order number
+        order_number = ''.join(random.choices(string.digits, k=14))
+        
+        # Simulate payment processing
+        payment_status = 0
+        payment_message = "UNPAID"
+        
+        # Insert order record into the database
+   
+        connection = connection_pool.get_connection()
+        cursor = connection.cursor()
+
+        insert_order_query = """
+            INSERT INTO orders (user_id, order_number, payment_status, payment_message)
+            VALUES (%s, %s, %s, %s)
+        """
+        cursor.execute(insert_order_query, (user_id, order_number, payment_status, payment_message))
+        connection.commit()
+        
+        # Prepare data for TapPay Pay By Prime API call
+        tap_pay_data = {
+            "prime": order_data.prime,
+            "partner_key": "partner_RLLTLiV8ap6pzkVZZ7WdhJilhDePqu9EwGXye5hxBBqXbhjUb0WKevLe",  
+            "merchant_id": "a20034425_ESUN",  
+            "details": "TapPay Test",
+            "amount": int(order_data.order.price),
+            "cardholder": {
+                "name":order_data.order.contact.name,
+                "email": order_data.order.contact.email,
+                "phone_number": order_data.order.contact.phone
+            },
+            "remember": False
+        }
+        url = "https://sandbox.tappaysdk.com/tpc/payment/pay-by-prime"
+        headers = {
+            "Content-Type": "application/json",
+            "x-api-key": "partner_RLLTLiV8ap6pzkVZZ7WdhJilhDePqu9EwGXye5hxBBqXbhjUb0WKevLe"  # Replace with your partner key
+        }
+        print("TapPay data:", tap_pay_data)
+        tap_pay_response = requests.post(url, headers=headers, json=tap_pay_data)
+        tap_pay_result = tap_pay_response.json()
+
+        # Log the full response from TapPay
+        print("TapPay response:", tap_pay_result)
+
+        if tap_pay_result.get('status') == 0:
+            # Payment succeeded
+            payment_status = 1
+            payment_message = "付款成功"
+        else:
+            # Payment failed
+            payment_status = 2
+            payment_message = "付款失敗"
+
+        # Update payment status and message in the database
+        update_payment_query = """
+            UPDATE orders
+            SET payment_status = %s, payment_message = %s
+            WHERE order_number = %s
+        """
+        cursor.execute(update_payment_query, (payment_status, payment_message, order_number))
+        connection.commit()
+
+        response_data = {
+            "data": {
+                "number": order_number,
+                "payment": {
+                    "status": payment_status,
+                    "message": payment_message
+                }
+            }
+        }
+        return JSONResponse(content=response_data)
+    
+    except mysql.connector.Error as e:
+        return JSONResponse(content={"error": True, "message": f"Database error: {str(e)}"}, status_code=500)
+    except Exception as e:
+        return JSONResponse(content={"error": True, "message": f"Unexpected error: {str(e)}"}, status_code=500)
+    finally:
+        if cursor:
+            cursor.close()
+        if connection:
+            connection.close()
+
 
 @app.get("/api/attractions")
 async def api_attraction(page: int=Query(..., description="Page number", ge=0), keyword: str=Query(None, description="Keyword for search")):

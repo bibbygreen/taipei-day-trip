@@ -1,0 +1,22 @@
+.success-icon-container{
+  display: flex;
+  justify-content: center;
+  margin-top: 30px;
+  margin-bottom: 30px;
+}
+#icon-checked{
+  /* margin: auto; */
+  width: 150px;
+  height: 150px;
+}
+.success-text-container{
+  /* display: flex; */
+  justify-content: center;
+  /* margin: 30px auto; */
+}
+.success-text-container div{
+  display: block;
+  margin: 20px;
+  text-align: center;
+
+}
