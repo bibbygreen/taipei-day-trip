@@ -88,49 +88,52 @@
     </div>
   </section>
   <hr>
-  <section class="contact-info">
-    <div class="contact-info-container">
-      <div class="contact-info-title">您的聯絡資訊</div>
-      <div class="contact-name">聯絡姓名：
-        <input type="text" id="contact-name-input" value="">
+  <form>
+    <section class="contact-info">
+      <div class="contact-info-container">
+        <div class="contact-info-title">您的聯絡資訊</div>
+        <div class="contact-name">聯絡姓名：
+          <input type="text" id="contact-name-input" value="">
+        </div>
+        <div class="contact-name">聯絡信箱：
+          <input type="text" id="contact-email-input" value="">
+        </div>
+        <div class="contact-name">手機號碼：
+          <input type="text" id="contact-phone-input" pattern="09\d{2}-\d{3}-\d{3}" title="09xx-xxx-xxx" required>
+        </div>
+        <p>請保持手機暢通，準時到達，導覽人員將用手機與您聯繫，務必留下正確的聯絡方式。</p>
       </div>
-      <div class="contact-name">聯絡信箱：
-        <input type="text" id="contact-email-input" value="">
+    </section>
+  
+  
+    <hr>
+    <section class="credit-card-info">
+      <div class="credit-card-info-container">
+        <div class="credit-card-info-title">信用卡付款資訊</div>
+        <div class="credit-card-info-box">
+          <p>卡片號碼：</p>
+          <div class="tpfield" id="card-number"></div>
+        </div>
+        <div class="credit-card-info-box">
+          <p>過期時間：</p>
+          <div class="tpfield" id="card-expiration-date"></div>
+        </div>
+        <div class="credit-card-info-box"> 
+          <p>驗證密碼：</p>
+          <div class="tpfield" id="card-ccv"></div>
+        </div>
       </div>
-      <div class="contact-name">手機號碼：
-        <input type="text" id="contact-phone-input">
+    </section>
+    <hr>
+    <section class="booking-summary">
+      <div class="booking-summary-container">
+        <div class="sum-of-price"></div>
+        <div class="btn-confirm-div">
+          <button class="btn-start-booking" id="confirm-payment">確認訂購並付款</button>
+        </div>
       </div>
-      <p>請保持手機暢通，準時到達，導覽人員將用手機與您聯繫，務必留下正確的聯絡方式。</p>
-    </div>
-  </section>
-  <hr>
-  <section class="credit-card-info">
-    <div class="credit-card-info-container">
-      <div class="credit-card-info-title">信用卡付款資訊</div>
-      <div class="credit-card-info-box">
-        <p>卡片號碼：</p>
-        <div class="tpfield" id="card-number"></div>
-      </div>
-      <div class="credit-card-info-box">
-        <p>過期時間：</p>
-        <div class="tpfield" id="card-expiration-date"></div>
-      </div>
-      <div class="credit-card-info-box"> 
-        <p>驗證密碼：</p>
-        <div class="tpfield" id="card-ccv"></div>
-      </div>
-    </div>
-  </section>
-  <hr>
-  <section class="booking-summary">
-    <div class="booking-summary-container">
-      <div class="sum-of-price"></div>
-      <div class="btn-confirm-div">
-        <button class="btn-start-booking" id="confirm-payment">確認訂購並付款</button>
-      </div>
-    </div>
-  </section>
-
+    </section>
+  </form>
   
   <footer class="footer">
     <div class="footer-text">COPYRIGHT © 2021 台北一日遊</div>

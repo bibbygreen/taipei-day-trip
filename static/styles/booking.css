@@ -92,6 +92,7 @@ hr{
 }
 .contact-info-container input, .credit-card-info-container input{
   width: 200px;
+  height: 40px;
   padding: 7px;
   border: 1px solid #CCCCCC;
   border-radius: 5px;

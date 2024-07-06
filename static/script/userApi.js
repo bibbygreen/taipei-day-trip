@@ -1,27 +1,27 @@
 async function verifyUserSignInToken() {
-  const token=localStorage.getItem('token');
+  const token=localStorage.getItem("token");
   if(token) {
-     const response = await fetch("/api/user/auth", {
+     const response=await fetch("/api/user/auth", {
       method: "GET",
       headers: {
         "Authorization": `Bearer ${token}`
       }
     });
     if (!response.ok) {
-      throw new Error('Token verification failed');
+      throw new Error("Token verification failed");
     }
     return await response.json();
   }else{
     return null;
-    // return Promise.reject(new Error('No token found'));
+    // return Promise.reject(new Error("No token found"));
   }
 }
 
 document.addEventListener("DOMContentLoaded", function () {
   
   const modal=document.getElementById("myModal");
-  const navSignIn=document.getElementById('signin-signup');
-  const navBookingTour=document.getElementById('booking-tour');
+  const navSignIn=document.getElementById("signin-signup");
+  const navBookingTour=document.getElementById("booking-tour");
   const signInForm=document.getElementById("signInForm");
   const signUpForm=document.getElementById("signUpForm");
   const switchToSignUp=document.getElementById("switchToSignUp");
@@ -30,8 +30,8 @@ document.addEventListener("DOMContentLoaded", function () {
   const signUpError=document.getElementById("signup-error");
   const signUpSuccess=document.getElementById("signup-success");
   const StartBooking=document.getElementById("start-booking");
-  const today = new Date().toISOString().split('T')[0];
-  document.getElementById('booking-date').min = today;
+  const today=new Date().toISOString().split("T")[0];
+  document.getElementById("booking-date").min=today;
 
   modal.style.display="none";
   //Modal 登入註冊互動視窗
@@ -58,7 +58,7 @@ document.addEventListener("DOMContentLoaded", function () {
         closeModal();
     }
   }
-  document.getElementsByClassName('close')[0].onclick=function() {
+  document.getElementsByClassName("close")[0].onclick=function() {
     closeModal();
   }
 
@@ -85,21 +85,21 @@ document.addEventListener("DOMContentLoaded", function () {
       })
       .catch(error => {
         console.error(error);
-        localStorage.removeItem('token');
-        navSignIn.textContent = "登入/註冊";
-        navSignIn.onclick = clickToShowModal;
+        localStorage.removeItem("token");
+        navSignIn.textContent="登入/註冊";
+        navSignIn.onclick=clickToShowModal;
       });
   }
 
   function handleSignOut() {
-    localStorage.removeItem('token');
+    localStorage.removeItem("token");
     checkUserSignInStatus();
   }
   function redirectToBookingPage() {
-    window.location.href = "/booking";
+    window.location.href="/booking";
   }
 
-  navBookingTour.onclick = function () {
+  navBookingTour.onclick=function () {
     verifyUserSignInToken()
       .then(data => {
         if (data) {
@@ -169,8 +169,8 @@ document.addEventListener("DOMContentLoaded", function () {
     .then((data) => {
       signInError.textContent="";
       if (data.token) {
-        localStorage.setItem('token', data.token);
-        location.reload();  // Refresh the page on successful sign-in
+        localStorage.setItem("token", data.token);
+        location.reload();
       } else {
         signInError.textContent=data.message;
       }
@@ -180,8 +180,8 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
   StartBooking.addEventListener("click", function(){
-    const date=document.getElementById('booking-date').value;
-    const timeOfDay = document.querySelector('input[name="booking-time"]:checked') ? document.querySelector('input[name="booking-time"]:checked').value : null;
+    const date=document.getElementById("booking-date").value;
+    const timeOfDay=document.querySelector('input[name="booking-time"]:checked') ? document.querySelector('input[name="booking-time"]:checked').value : null;
     
     if (!date || !timeOfDay) {
       alert("請選取日期與時間");

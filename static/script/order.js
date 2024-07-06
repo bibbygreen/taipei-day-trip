@@ -1,9 +1,7 @@
-const bookingNumberDiv = document.getElementById('booking-number');
-
 function setupTPDirectSDK() {
   TPDirect.setupSDK(151901, 'app_vixuBsk4bJ7W6FZe0OBoujnI0ZnDoDMSaY0qPzrWxvcgV1DJply2PeV8BlZV', 'sandbox');
 
-  let fields = {
+  let fields={
     number: {
       element: '#card-number',
       placeholder: '**** **** **** ****'
@@ -44,7 +42,7 @@ function setupTPDirectSDK() {
   });
 
   TPDirect.card.onUpdate(function(update) {
-    const btnConfirmPayment = document.getElementById('confirm-payment');
+    const btnConfirmPayment=document.getElementById('confirm-payment');
     if (update.canGetPrime) {
       btnConfirmPayment.removeAttribute('disabled');
     } else {
@@ -52,16 +50,14 @@ function setupTPDirectSDK() {
     }
   });
 
-  // Add event listener for form submission
-  const btnConfirmPayment = document.getElementById('confirm-payment');
+  const btnConfirmPayment=document.getElementById('confirm-payment');
   btnConfirmPayment.addEventListener('click', onSubmitOrder);
 }
 
-// Function to handle form submission
 async function onSubmitOrder(event) {
   event.preventDefault();
 
-  const tappayStatus = TPDirect.card.getTappayFieldsStatus();
+  const tappayStatus=TPDirect.card.getTappayFieldsStatus();
   if (!tappayStatus.canGetPrime) {
     alert('Cannot get prime. Please check the card information and try again.');
     return;
@@ -73,25 +69,25 @@ async function onSubmitOrder(event) {
       return;
     }
 
-    const prime = result.card.prime;
-    const contactName = document.getElementById('contact-name-input').value;
-    const contactEmail = document.getElementById('contact-email-input').value;
-    const contactPhone = document.getElementById('contact-phone-input').value;
-    const bookingAttractionName = document.querySelector('.booking-attraction-name').textContent;
-    const bookingDate = document.querySelector('.booking-date').textContent.split('：')[1];
-    const bookingTimeText = document.querySelector('.booking-time').textContent.split('：')[1];
-    const bookingFee = document.querySelector('.booking-fee').textContent.split('：')[1];
-    const bookingAttractionAddress = document.querySelector('.booking-attraction-address').textContent.split('：')[1];
-    const bookingAttractionImage = document.querySelector('.attraction-img img').getAttribute('src');
+    const prime=result.card.prime;
+    const contactName=document.getElementById('contact-name-input').value;
+    const contactEmail=document.getElementById('contact-email-input').value;
+    const contactPhone=document.getElementById('contact-phone-input').value;
+    const bookingAttractionName=document.querySelector('.booking-attraction-name').textContent;
+    const bookingDate=document.querySelector('.booking-date').textContent.split('：')[1];
+    const bookingTimeText=document.querySelector('.booking-time').textContent.split('：')[1];
+    const bookingFee=document.querySelector('.booking-fee').textContent.split('：')[1];
+    const bookingAttractionAddress=document.querySelector('.booking-attraction-address').textContent.split('：')[1];
+    const bookingAttractionImage=document.querySelector('.attraction-img img').getAttribute('src');
 
-    const bookingTime = bookingTimeText === '上午九點至下午二點' ? 'morning' : 'afternoon';
+    const bookingTime=bookingTimeText === '上午九點至下午二點' ? 'morning' : 'afternoon';
     const orderData={
       prime: prime,
       order: {
         price: parseInt(bookingFee),
         trip: {
           attraction: {
-            // id: attractionId,  // Include the attraction ID here
+            // id: attractionId, 
             name: bookingAttractionName,
             address: bookingAttractionAddress,
             image: bookingAttractionImage
@@ -126,24 +122,39 @@ async function onSubmitOrder(event) {
     })
     .then(data => {
       if (data.data.payment.status === 1) {
-        window.location.href = `/thankyou?number=${data.data.number}`;
+        window.location.href=`/thankyou?number=${data.data.number}`;
       } else {
-        console.log(data.data.payment.status);
-        alert('Booking failed. Please try again.');
+
+        alert('交易失敗，敬請重新訂購');
+        window.location.href='/';
       }
     })
     .catch(error => {
       console.error('Error:', error);
       alert(`Booking failed. Please try again. Error: ${error.message}`);
+      window.location.href='/';
     });
   });
 }
 
-// Load TPDirect SDK script dynamically
-const script = document.createElement('script');
-script.src = 'https://js.tappaysdk.com/sdk/tpdirect/v5.14.0';
-script.async = true;
+// Load TPDirect SDK 
+const script=document.createElement('script');
+script.src='https://js.tappaysdk.com/sdk/tpdirect/v5.14.0';
+script.async=true;
 document.head.appendChild(script);
 
-// Execute setup function after TPDirect SDK script is loaded
-script.onload = setupTPDirectSDK;
+// Execute setup function
+script.onload=setupTPDirectSDK;
+
+async function fetchOrderData(orderNumber){
+  const response=await fetch(`/api/order/${orderNumber}`,{
+    method: "GET",
+    headers:{
+      "Authorization": `Bearer ${localStorage.getItem('token')}`
+    }
+  });
+  if (!response.ok){
+    throw new Error('Failed to fetch ordered data');
+  }
+  return await response.json();
+}

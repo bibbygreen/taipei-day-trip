@@ -93,18 +93,18 @@ def create_access_token(data: dict, expires_delta: timedelta=None):
 
 def verify_token(token: str):
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        user_id = payload.get("id")
+        payload=jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        user_id=payload.get("id")
 
         if not user_id:
             raise HTTPException(status_code=401, detail="Invalid token")
             
-        connection = connection_pool.get_connection()
-        cursor = connection.cursor(dictionary=True)
+        connection=connection_pool.get_connection()
+        cursor=connection.cursor(dictionary=True)
         
-        select_user_query = "SELECT id, name, email FROM members WHERE id = %s"
+        select_user_query="SELECT id, name, email FROM members WHERE id = %s"
         cursor.execute(select_user_query, (user_id,))
-        user_info = cursor.fetchone()
+        user_info=cursor.fetchone()
         
         if user_info:
             return user_info
@@ -227,7 +227,7 @@ async def get_api_user_auth(request: Request):
     if auth_header:
         token=auth_header.split(" ")[1]
         user_info=verify_token(token)
-        response_data = {
+        response_data={
             "id": user_info["id"],
             "name": user_info["name"],
             "email": user_info["email"]
@@ -257,7 +257,7 @@ async def create_booking(request: Request, booking_data: BookingData):
             """
             cursor.execute(update_booking_query, (booking_data.attractionId, booking_data.date, booking_data.time, booking_data.price, user_id))
         else:
-            insert_booking_query = """
+            insert_booking_query="""
                 INSERT INTO bookings (user_id, attraction_id, date, time, price)
                 VALUES (%s, %s, %s, %s, %s)
             """
@@ -295,19 +295,19 @@ async def get_user_booking_data(request: Request):
         booking_data=cursor.fetchone()
 
         if booking_data:
-            attraction = {
+            attraction={
                 "name": booking_data[3],  
                 "address": booking_data[4],
                 "images": booking_data[5] 
             }
-            booking = {
+            booking={
                 "date": booking_data[0].isoformat(),
                 "time": booking_data[1],
                 "price": booking_data[2] 
             }
         else:
-            attraction = {}
-            booking = {}
+            attraction={}
+            booking={}
 
         response_data={
             "attraction": attraction,
@@ -329,15 +329,15 @@ async def get_user_booking_data(request: Request):
         
 @app.delete("/api/booking")
 async def delete_user_booking_data(request: Request):
-    token = request.headers.get("Authorization").split(" ")[1]
-    user_info = verify_token(token)
-    user_id = user_info["id"]
+    token=request.headers.get("Authorization").split(" ")[1]
+    user_info=verify_token(token)
+    user_id=user_info["id"]
     
     try:
-        connection = connection_pool.get_connection()
-        cursor = connection.cursor()
+        connection=connection_pool.get_connection()
+        cursor=connection.cursor()
 
-        delete_query = """
+        delete_query="""
             DELETE FROM bookings
             WHERE user_id = %s;
         """
@@ -355,33 +355,28 @@ async def delete_user_booking_data(request: Request):
         connection.close()
 
 @app.post("/api/orders")
-async def api_orders(request: Request, order_data: OrderData):
+async def create_orders(request: Request, order_data: OrderData):
     try:
-        token = request.headers.get("Authorization").split(" ")[1]
-        user_info = verify_token(token)
-        user_id = user_info["id"]
+        token=request.headers.get("Authorization").split(" ")[1]
+        user_info=verify_token(token)
+        user_id=user_info["id"]
         
-        # Generate a random order number
-        order_number = ''.join(random.choices(string.digits, k=14))
+        order_number=''.join(random.choices(string.digits, k=14))
         
-        # Simulate payment processing
-        payment_status = 0
-        payment_message = "UNPAID"
-        
-        # Insert order record into the database
+        payment_status=0
+        payment_message="UNPAID"
    
-        connection = connection_pool.get_connection()
-        cursor = connection.cursor()
+        connection=connection_pool.get_connection()
+        cursor=connection.cursor()
 
-        insert_order_query = """
+        insert_order_query="""
             INSERT INTO orders (user_id, order_number, payment_status, payment_message)
             VALUES (%s, %s, %s, %s)
         """
         cursor.execute(insert_order_query, (user_id, order_number, payment_status, payment_message))
         connection.commit()
         
-        # Prepare data for TapPay Pay By Prime API call
-        tap_pay_data = {
+        tap_pay_data={
             "prime": order_data.prime,
             "partner_key": "partner_RLLTLiV8ap6pzkVZZ7WdhJilhDePqu9EwGXye5hxBBqXbhjUb0WKevLe",  
             "merchant_id": "a20034425_ESUN",  
@@ -394,29 +389,23 @@ async def api_orders(request: Request, order_data: OrderData):
             },
             "remember": False
         }
-        url = "https://sandbox.tappaysdk.com/tpc/payment/pay-by-prime"
-        headers = {
+        url="https://sandbox.tappaysdk.com/tpc/payment/pay-by-prime"
+        headers={
             "Content-Type": "application/json",
             "x-api-key": "partner_RLLTLiV8ap6pzkVZZ7WdhJilhDePqu9EwGXye5hxBBqXbhjUb0WKevLe"  # Replace with your partner key
         }
         print("TapPay data:", tap_pay_data)
-        tap_pay_response = requests.post(url, headers=headers, json=tap_pay_data)
-        tap_pay_result = tap_pay_response.json()
-
-        # Log the full response from TapPay
-        print("TapPay response:", tap_pay_result)
+        tap_pay_response=requests.post(url, headers=headers, json=tap_pay_data)
+        tap_pay_result=tap_pay_response.json()
 
         if tap_pay_result.get('status') == 0:
-            # Payment succeeded
-            payment_status = 1
-            payment_message = "付款成功"
+            payment_status=1
+            payment_message="付款成功"
         else:
-            # Payment failed
-            payment_status = 2
-            payment_message = "付款失敗"
+            payment_status=2
+            payment_message="付款失敗"
 
-        # Update payment status and message in the database
-        update_payment_query = """
+        update_payment_query="""
             UPDATE orders
             SET payment_status = %s, payment_message = %s
             WHERE order_number = %s
@@ -424,16 +413,22 @@ async def api_orders(request: Request, order_data: OrderData):
         cursor.execute(update_payment_query, (payment_status, payment_message, order_number))
         connection.commit()
 
-        response_data = {
-            "data": {
-                "number": order_number,
-                "payment": {
-                    "status": payment_status,
-                    "message": payment_message
-                }
+        # Delete booking data for the current user
+        delete_booking_query="""
+            DELETE FROM bookings WHERE user_id = %s
+        """
+        cursor.execute(delete_booking_query, (user_id,))
+        connection.commit()
+
+        response_data={
+            "number": order_number,
+            "payment": {
+                "status": payment_status,
+                "message": payment_message
             }
         }
-        return JSONResponse(content=response_data)
+        return JSONResponse(content={"data": response_data})
+        
     
     except mysql.connector.Error as e:
         return JSONResponse(content={"error": True, "message": f"Database error: {str(e)}"}, status_code=500)
@@ -445,6 +440,63 @@ async def api_orders(request: Request, order_data: OrderData):
         if connection:
             connection.close()
 
+@app.get("/api/order/{orderNumber}")
+async def get_order(orderNumber: str):
+    try:
+        connection=connection_pool.get_connection()
+        cursor=connection.cursor()
+
+        order_query="""
+            SELECT orders.order_number, orders.payment_status, orders.payment_message, orders.price,
+            bookings.date, bookings.time, bookings.price AS booking_price, 
+            taipei_spots.id AS attraction_id, taipei_spots.name AS attraction_name, 
+            taipei_spots.address AS attraction_address, taipei_spots.images, 
+            members.name AS contact_name, members.email AS contact_email, 
+            members.phone AS contact_phone
+            FROM orders
+            JOIN bookings ON orders.user_id = bookings.user_id
+            JOIN taipei_spots ON bookings.attraction_id = taipei_spots.id
+            JOIN members ON orders.user_id = members.id
+            WHERE orders.order_number = %s
+        """
+        cursor.execute(order_query, (orderNumber,))
+        order=cursor.fetchone()
+
+        if not order:
+            raise HTTPException(status_code=404, detail="Order not found")
+        
+        response_data={
+            "number": order["order_number"],
+            "price": order["price"],
+            "trip":{
+                "attraction":{
+                    "id": order["attraction_id"],
+                    "name": order["attraction_name"],
+                    "address": order["atttraction_address"],
+                    "image": json.loads(order["images"])[0] if order["images"] else ""
+                },
+                "date": order["date"],
+                "time": order["time"]
+            },
+            "contact":{
+                "name": order["contact_name"],
+                "email": order["contact_email"],
+                "phone": order["contact_phone"]
+            },
+            "status": order["payment_Status"]
+        }
+
+        return JSONResponse(content={"data": response_data})
+    
+    except mysql.connector.Error as e:
+        return JSONResponse(content={"error": True, "message": f"Database error: {str(e)}"}, status_code=500)
+    except Exception as e:
+        return JSONResponse(content={"error": True, "message": f"Unexpected error: {str(e)}"}, status_code=500)
+    finally:
+        if cursor:
+            cursor.close()
+        if connection:
+            connection.close()
 
 @app.get("/api/attractions")
 async def api_attraction(page: int=Query(..., description="Page number", ge=0), keyword: str=Query(None, description="Keyword for search")):
