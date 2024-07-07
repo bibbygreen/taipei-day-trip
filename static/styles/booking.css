@@ -92,6 +92,7 @@ hr{
 }
 .contact-info-container input, .credit-card-info-container input{
   width: 200px;
+  height: 40px;
   padding: 7px;
   border: 1px solid #CCCCCC;
   border-radius: 5px;
@@ -115,6 +116,15 @@ hr{
   margin-top: 25px;
   margin-bottom: 40px;
   cursor: pointer;  
+}
+.credit-card-info-box{
+  display: flex;
+  vertical-align: middle;
+}
+.credit-card-info-box p{
+  height: 30px;
+  vertical-align: middle;
+  margin-top: 12px;
 }
 .booking-summary-container{
   width: 1000px;
@@ -144,6 +154,15 @@ hr{
 }
 .booking-info-box-delete{
   display: flex;
+}
+
+.tpfield {
+  height: 40px;
+  width: 200px;
+  border: 1px solid #CCCCCC;
+  margin: 5px 0;
+  padding: 7px;
+  border-radius: 5px;
 }
 
 @media (min-width: 601px) and (max-width: 1200px) {

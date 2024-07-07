@@ -4,8 +4,34 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Thank You</title>
+  <link rel="stylesheet" href="/static/styles/nav-footer.css" />
+  <link rel="stylesheet" href="/static/styles/thankyou.css">
 </head>
 <body>
+  <header>
+    <div class="navbar">
+      <div class="headline">
+        <a href="/">台北一日遊</a>
+      </div>
+      <div class="desktop-menu">
+        <div id="booking-tour">預定行程</div>
+        <div id="signin-signup">登出系統</div>
+      </div>
+    </div>
+  </header>
+  <div class="icon-container">
+    <img src="" id="icon-img" alt="">
+  </div>
+  <div class="success-text-container">
+    <h2>您的訂購已完成<br>請於指定時間抵達目的地</h2>
+    <p>訂單編號：<span id="order-number"></span></p>
+  </div>
   
+  
+  <footer class="footer">
+    <div class="footer-text">COPYRIGHT © 2021 台北一日遊</div>
+  </footer>
+  <script type="text/javascript" src="/static/script/userApi.js"></script>
+  <script type="text/javascript" src="/static/script/thankyou.js"></script>
 </body>
 </html>

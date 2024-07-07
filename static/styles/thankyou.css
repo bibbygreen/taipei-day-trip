@@ -1,0 +1,22 @@
+.icon-container{
+  display: flex;
+  justify-content: center;
+  margin-top: 30px;
+  margin-bottom: 30px;
+}
+#icon-img{
+  /* margin: auto; */
+  width: 150px;
+  height: 150px;
+}
+.success-text-container{
+  /* display: flex; */
+  justify-content: center;
+  margin: 30px auto;
+}
+.success-text-container p, h2{
+  display: block;
+  margin: 30px;
+  text-align: center;
+
+}
