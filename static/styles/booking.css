@@ -44,7 +44,7 @@ body{
   cursor: pointer;
 }
 .booking-info-text{
-  width: 200px;
+  width: 400px;
   margin-left: 20px;
 }
 .booking-attraction-name{
@@ -201,7 +201,7 @@ hr{
     left: 38%;
   }
   hr{
-    width: 600px;
+    width: 90%;
   }
 }
   
@@ -249,6 +249,6 @@ hr{
     transform: translate(-0, 240px);
   }
   hr{
-    width: 360px;
+    width: 90%;
   }
 }

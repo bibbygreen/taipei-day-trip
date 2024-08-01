@@ -1,7 +1,8 @@
 from fastapi import *
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
-import mysql.connector.pooling
+import mysql.connector
+from dbconfig import connection_pool
 import json
 from pydantic import BaseModel
 from datetime import datetime, timedelta
@@ -10,14 +11,17 @@ import jwt
 import random
 import string
 import requests
+from dotenv import load_dotenv
+import os
+load_dotenv()
 
 app=FastAPI()
 app.mount("/static", StaticFiles(directory="static", html=True),name="static")
 
 # JWT configuration
-SECRET_KEY="4321rewq"
-ALGORITHM="HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES=10080
+SECRET_KEY=os.getenv("SECRET_KEY")
+ALGORITHM=os.getenv("ALGORITHM")
+ACCESS_TOKEN_EXPIRE_MINUTES=int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
 
 class UserSignup(BaseModel):
     name: str
@@ -68,16 +72,12 @@ class OrderData(BaseModel):
     order: Order
 
 con={
-    "user": "debian-sys-maint",
-    "password": "YNGJmkTnnhw4dDT2",
-    "host": "localhost",
-    "database": "taipei_day_trip"
+    "user": os.getenv("DB_USER"),
+    "password": os.getenv("DB_PASSWORD"),
+    "host": os.getenv("DB_HOST"),
+    "database": os.getenv("DB_NAME")
 }
-connection_pool=mysql.connector.pooling.MySQLConnectionPool(
-    pool_name="my_pool",
-    pool_size=5,
-    **con
-)
+
 connection=connection_pool.get_connection()
 cursor=connection.cursor()
 
@@ -124,7 +124,6 @@ def verify_token(token: str):
             connection.close()
 
 def execute_sql(sql, values=None):
-    connection=None
     try:
         connection=connection_pool.get_connection()
         if connection.is_connected():
@@ -135,8 +134,8 @@ def execute_sql(sql, values=None):
                 cursor.execute(sql)
             result=cursor.fetchall()
             return result
-    except mysql.connector.Error as e:
-        print(f"Error: {e.msg}")
+    except:
+        result="error"
     finally:
         if connection:
             cursor.close()
@@ -378,8 +377,8 @@ async def create_orders(request: Request, order_data: OrderData):
         
         tap_pay_data={
             "prime": order_data.prime,
-            "partner_key": "partner_RLLTLiV8ap6pzkVZZ7WdhJilhDePqu9EwGXye5hxBBqXbhjUb0WKevLe",  
-            "merchant_id": "a20034425_ESUN",  
+            "partner_key": os.getenv("PARTNER_KEY"),  
+            "merchant_id": os.getenv("MERCHANT_ID"),  
             "details": "TapPay Test",
             "amount": int(order_data.order.price),
             "cardholder": {
@@ -394,7 +393,6 @@ async def create_orders(request: Request, order_data: OrderData):
             "Content-Type": "application/json",
             "x-api-key": "partner_RLLTLiV8ap6pzkVZZ7WdhJilhDePqu9EwGXye5hxBBqXbhjUb0WKevLe"  # Replace with your partner key
         }
-        print("TapPay data:", tap_pay_data)
         tap_pay_response=requests.post(url, headers=headers, json=tap_pay_data)
         tap_pay_result=tap_pay_response.json()
 
