@@ -328,7 +328,7 @@ hr{
         height: 35px;
     } 
     hr{
-        width: 95%;
+        width: 90%;
     }
     .infos-container{
         width: 600px;
@@ -423,5 +423,8 @@ hr{
         line-height: 13.3px;
         text-align: left;
         margin-bottom: 8px;
+    }
+    hr{
+        width: 90%;
     }
 }
